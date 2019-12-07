@@ -20,6 +20,14 @@ export function sum(values: number[]): number {
     return values.reduce((a, b) => a + b, 0);
 }
 
+export function max(values: number[]): number {
+    return values.reduce((a, b) => Math.max(a, b));
+}
+
+export function min(values: number[]): number {
+    return values.reduce((a, b) => Math.min(a, b));
+}
+
 export function updateArray<T>(array: T[], index: number, newValue: T): T[] {
     return splice(array, index, 1, newValue);
 }
@@ -75,4 +83,15 @@ export function zip<TLeft, TRight>(left: TLeft[], right: TRight[]): Array<[TLeft
     return left.length > right.length
         ? right.map((r, i) => [left[i], r])
         : left.map((l, i) => [l, right[i]]);
+}
+
+export function permutations<T>(items: T[]): Array<T[]> {
+    return items.length === 1
+        ? [items]
+        : items.flatMap((item, index) =>
+            permutations(splice(items, index, 1)).map(p => [item, ...p]));
+}
+
+export function last<T>(items: T[]): T {
+    return items[items.length - 1];
 }
