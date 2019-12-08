@@ -28,6 +28,11 @@ export function min(values: number[]): number {
     return values.reduce((a, b) => Math.min(a, b));
 }
 
+export function minItem<T>(items: T[], selector: (item: T) => number): T {
+    const itemValues = items.map(i => [i, selector(i)] as const);
+    return itemValues.reduce((a, b) => a[1] < b[1] ? a : b)[0];
+}
+
 export function updateArray<T>(array: T[], index: number, newValue: T): T[] {
     return splice(array, index, 1, newValue);
 }
