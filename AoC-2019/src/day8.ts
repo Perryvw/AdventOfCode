@@ -13,6 +13,7 @@ function partitionLayers(imageData: number[], layerSize: number): Array<number[]
 
 const digitCount = (digit: number) => (data: number[]) => data.filter(d => d === digit).length;
 
+// Part 1
 const layers = partitionLayers(imageData, imageWidth * imageHeight);
 const layerWithLeastZeroes = minItem(layers, digitCount(0));
 const checksum = digitCount(1)(layerWithLeastZeroes) * digitCount(2)(layerWithLeastZeroes);

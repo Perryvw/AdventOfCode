@@ -100,3 +100,9 @@ export function permutations<T>(items: T[]): Array<T[]> {
 export function last<T>(items: T[]): T {
     return items[items.length - 1];
 }
+
+export function resize<T>(array: T[], length: number, defaultValue: T): T[] {
+    return array.length >= length
+        ? array.slice(0, length)
+        : [...array, ...range(0, length - array.length).map(() => defaultValue)];
+}
