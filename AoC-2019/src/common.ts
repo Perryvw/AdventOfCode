@@ -24,6 +24,11 @@ export function max(values: number[]): number {
     return values.reduce((a, b) => Math.max(a, b));
 }
 
+export function maxItem<T>(items: T[], selector: (item: T) => number): T {
+    const itemValues = items.map(i => [i, selector(i)] as const);
+    return itemValues.reduce((a, b) => a[1] < b[1] ? b : a)[0];
+}
+
 export function min(values: number[]): number {
     return values.reduce((a, b) => Math.min(a, b));
 }
@@ -105,4 +110,9 @@ export function resize<T>(array: T[], length: number, defaultValue: T): T[] {
     return array.length >= length
         ? array.slice(0, length)
         : [...array, ...range(0, length - array.length).map(() => defaultValue)];
+}
+
+export function orderBy<T>(items: T[], selector: (arg: T) => number, secondarySelector: (arg: T) => number = () => 0): T[] {
+    const itemValues = items.map(i => [i, selector(i), secondarySelector(i)] as const);
+    return itemValues.sort((i1, i2) => i1[1] - i2[1] === 0 ? i1[2] - i2[2] : i1[1] - i2[1]).map(i => i[0]);
 }
