@@ -195,10 +195,13 @@ function handleNextInstruction(state: ProgramState): ProgramState {
     }
 }
 
-export function execute(state: ProgramState): ProgramState {
+export function execute(state: ProgramState, inputProvider = (state: ProgramState) => state): ProgramState {
     let nextState = handleNextInstruction(state);
     while (!nextState.done && !nextState.waiting) {
         nextState = handleNextInstruction(nextState);
+        if (nextState.waiting) {
+            nextState = inputProvider(nextState);
+        }
     }
     return nextState;
     // No tail call optimization -> causes stack overflows T_T
@@ -217,5 +220,14 @@ export const addProgramInput = (state: ProgramState, ...input: number[]) =>
         instructionPointer: state.instructionPointer,
         input: [...state.input, ...input],
         output: state.output,
+        relativeBase: state.relativeBase,
+    });
+
+export const clearOutput = (state: ProgramState) => 
+    ({
+        memory: state.memory,
+        instructionPointer: state.instructionPointer,
+        input: state.input,
+        output: [],
         relativeBase: state.relativeBase,
     });
