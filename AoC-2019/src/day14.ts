@@ -1,6 +1,6 @@
 import { execSync } from "child_process";
 import { writeFileSync } from "fs";
-import { parseData, unique } from "./common";
+import { binaryMaximize, binaryMinimize, parseData, unique } from "./common";
 
 type Reagent = { count: number, chemical: string };
 type Reaction = { in: Reagent[], out: Reagent }
@@ -29,62 +29,48 @@ const findFormulaCounts = (chemical: string) =>
 const chemicalConstraints = chemicals.filter(c => c !== "FUEL")
     .map(c => `(assert (>= ${c} (+ ${findFormulaCounts(c).map(r => `(* ${r[1].count} f${r[0]})`).join(" ")})))`);
 
-const z3FileWithTarget = (target: number) => [
-        ...chemicalVars,
-        ...formulaVars,
-        ...formulaConstraints,
-        ...chemicalConstraints,
-        "(assert (= FUEL 1))",
-        `(assert (<= ORE ${target}))`,
-        "(check-sat)",
-        "(get-model)"
-    ].join("\n");
-
-function binaryMinimize(lower: number, upper: number): number {
-    const half = Math.floor((lower + upper) / 2);
-    if (lower > upper) return half;
-    writeFileSync("day14.smt2", z3FileWithTarget(half));
+const tryOreValue = (value: number) => {
     try {
+        const fileContents = [
+            ...chemicalVars,
+            ...formulaVars,
+            ...formulaConstraints,
+            ...chemicalConstraints,
+            "(assert (= FUEL 1))",
+            `(assert (<= ORE ${value}))`,
+            "(check-sat)",
+            "(get-model)"
+        ].join("\n");
+
+        writeFileSync("day14.smt2", fileContents);
         execSync("z3 day14.smt2");
-        return lower < upper
-            ? binaryMinimize(lower, half - 1)
-            : upper;
+        return true; 
     } catch {
-        // Unsat
-        return lower < upper
-            ? binaryMinimize(half + 1, upper)
-            : lower;
-    };
-}
+        return false
+    }
+};
 
-console.log(`Part 1: ${binaryMinimize(0, 1000000)}`);
+console.log(`Part 1: ${binaryMinimize(0, 1000000, tryOreValue)}`);
 
-const z3FileWithTargetMaximize = (target: number) => [
-    ...chemicalVars,
-    ...formulaVars,
-    ...formulaConstraints,
-    ...chemicalConstraints,
-    `(assert (>= FUEL ${target}))`,
-    "(assert (<= ORE 1000000000000))",
-    "(check-sat)",
-    "(get-model)"
-].join("\n");
-
-function binaryMaximize(lower: number, upper: number): number {
-    const half = Math.floor((lower + upper) / 2);
-    if (lower > upper) return half;
-    writeFileSync("day14.smt2", z3FileWithTargetMaximize(half));
+const tryFuelValue = (value: number) => {
     try {
-        execSync("z3 day14.smt2");
-        return lower < upper
-            ? binaryMaximize(half + 1, upper)
-            : upper;
-    } catch {
-        // Unsat
-        return lower < upper
-            ? binaryMaximize(lower, half - 1)
-            : lower;
-    };
-}
+        const fileContents = [
+            ...chemicalVars,
+            ...formulaVars,
+            ...formulaConstraints,
+            ...chemicalConstraints,
+            `(assert (>= FUEL ${value}))`,
+            "(assert (<= ORE 1000000000000))",
+            "(check-sat)",
+            "(get-model)"
+        ].join("\n");
 
-console.log(`Part 2: ${binaryMaximize(0, 1000000000000)}`);
+        writeFileSync("day14.smt2", fileContents);
+        execSync("z3 day14.smt2");
+        return true; 
+    } catch {
+        return false
+    }
+};
+
+console.log(`Part 2: ${binaryMaximize(0, 1000000000000, tryFuelValue)}`);

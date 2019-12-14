@@ -47,42 +47,26 @@ const energy = (state: PlanetState) => potentialEnergy(state) * kineticEnergy(st
 console.log(`Part 1: ${sum(simulate(planets, 1000).map(energy))}`);
 
 const hash = (coord: number) => (state: SystemState) => state.map(p => `${p.pos[coord]};${p.vel[coord]}`).join(",");
-const xHash = hash(0);
-const yHash = hash(1);
-const zHash = hash(2)
 
-const frequencies = [undefined, undefined, undefined] as Array<number | undefined>;
+function findFrequency(state: SystemState, axis: number): number {
+    let steps = 0;
+    const seen = new Map<string, number>();
 
-const seenX = new Map<string, number>();
-const seenY = new Map<string, number>();
-const seenZ = new Map<string, number>();
+    while (true) {
+        state = step(state);
+        steps++;
+        const stateHash = hash(axis)(state);
 
-let state = planets;
-let steps = 0;
-while (frequencies.some(c => c === undefined)) {
-    state = step(state);
-    steps++;
-    if (frequencies[0] === undefined) {
-        if(seenX.has(xHash(state))) {
-            frequencies[0] = steps - seenX.get(xHash(state))!;
-        } else {
-            seenX.set(xHash(state), steps);
+        if (seen.has(stateHash)) {
+            return steps - seen.get(stateHash)!;
         }
-    }
-    if (frequencies[1] === undefined) {
-        if(seenY.has(yHash(state))) {
-            frequencies[1] = steps - seenY.get(yHash(state))!;
-        } else {
-            seenY.set(yHash(state), steps);
-        }
-    }
-    if (frequencies[2] === undefined) {
-        if(seenZ.has(zHash(state))) {
-            frequencies[2] = steps - seenZ.get(zHash(state))!;
-        } else {
-            seenZ.set(zHash(state), steps);
-        }
+
+        seen.set(stateHash, steps);
     }
 }
 
-console.log(`Part 2: ${lcm(frequencies[0]!, frequencies[1]!, frequencies[2]!)}`);
+const xFrequency = findFrequency(planets, 0);
+const yFrequency = findFrequency(planets, 1);
+const zFrequency = findFrequency(planets, 2);
+
+console.log(`Part 2: ${lcm(xFrequency, yFrequency, zFrequency)}`);

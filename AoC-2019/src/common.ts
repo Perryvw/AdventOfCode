@@ -128,3 +128,33 @@ export function lcm(...items: number[]): number {
         ? Math.abs(items[0] * items[1]) / gcd(items[0], items[1])
         : lcm(items[0], lcm(...items.slice(1)));
 }
+
+export function binaryMinimize(lower: number, upper: number, validateOption: (v: number) => boolean): number {
+    const half = Math.floor((lower + upper) / 2);
+    if (lower > upper) return half;
+    if (validateOption(half)) {
+        return lower < upper
+            ? binaryMinimize(lower, half - 1, validateOption)
+            : upper;
+    } else {
+        // Unsat
+        return lower < upper
+            ? binaryMinimize(half + 1, upper, validateOption)
+            : lower;
+    };
+}
+
+export function binaryMaximize(lower: number, upper: number, validateOption: (v: number) => boolean): number {
+    const half = Math.floor((lower + upper) / 2);
+    if (lower > upper) return half;
+    if (validateOption(half)) {
+        return lower < upper
+            ? binaryMaximize(half + 1, upper, validateOption)
+            : upper;
+    } else {
+        // Unsat
+        return lower < upper
+            ? binaryMaximize(lower, half - 1, validateOption)
+            : lower;
+    };
+}
