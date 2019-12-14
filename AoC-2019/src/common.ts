@@ -116,3 +116,15 @@ export function orderBy<T>(items: T[], selector: (arg: T) => number, secondarySe
     const itemValues = items.map(i => [i, selector(i), secondarySelector(i)] as const);
     return itemValues.sort((i1, i2) => i1[1] - i2[1] === 0 ? i1[2] - i2[2] : i1[1] - i2[1]).map(i => i[0]);
 }
+
+export function gcd(...items: number[]): number {
+    return items.length === 2
+        ? items[1] === 0 ? items[0] : gcd(items[1], items[0] % items[1])
+        : gcd(items[0], gcd(...items.slice(1)));
+}
+
+export function lcm(...items: number[]): number {
+    return items.length === 2
+        ? Math.abs(items[0] * items[1]) / gcd(items[0], items[1])
+        : lcm(items[0], lcm(...items.slice(1)));
+}
