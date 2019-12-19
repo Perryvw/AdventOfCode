@@ -131,30 +131,41 @@ export function lcm(...items: number[]): number {
 
 export function binaryMinimize(lower: number, upper: number, validateOption: (v: number) => boolean): number {
     const half = Math.floor((lower + upper) / 2);
-    if (lower > upper) return half;
-    if (validateOption(half)) {
-        return lower < upper
+    const isValid = validateOption(half);
+    return lower >= upper
+        ? (isValid ? lower : half + 1)
+        : isValid
             ? binaryMinimize(lower, half - 1, validateOption)
-            : upper;
-    } else {
-        // Unsat
-        return lower < upper
-            ? binaryMinimize(half + 1, upper, validateOption)
-            : lower;
-    };
+            : binaryMinimize(half + 1, upper, validateOption);
 }
 
 export function binaryMaximize(lower: number, upper: number, validateOption: (v: number) => boolean): number {
     const half = Math.floor((lower + upper) / 2);
-    if (lower > upper) return half;
-    if (validateOption(half)) {
-        return lower < upper
+    const isValid = validateOption(half);
+    return lower >= upper
+        ? (isValid ? upper : half - 1)
+        : isValid
             ? binaryMaximize(half + 1, upper, validateOption)
-            : upper;
-    } else {
-        // Unsat
-        return lower < upper
-            ? binaryMaximize(lower, half - 1, validateOption)
-            : lower;
-    };
+            : binaryMaximize(lower, half - 1, validateOption);
+}
+
+export function repeat<T>(value: T, count: number): T[] {
+    return new Array(count).fill(value);
+}
+
+export function repeatArray<T>(array: T[], count: number): T[] {
+    return range(1, count).flatMap(() => array);
+}
+
+export function countTrue(...args: boolean[]): number {
+    return sum(args.map(a => a ? 1 : 0));
+}
+
+export function log<T>(value: T, ...additionalValues: any[]): T {
+    console.log(value, ...additionalValues);
+    return value;
+}
+
+export function uniqueOn<T>(values: T[], selector: (v: T) => string) {
+    return [...new Map(values.map(v => [selector(v), v])).values()];
 }
