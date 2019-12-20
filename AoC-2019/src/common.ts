@@ -1,14 +1,16 @@
 import * as fs from "fs";
 import { performance } from "perf_hooks";
 
-export function readLines(filePath: string): string[] {
+export function readLines(filePath: string, trim = true): string[] {
     const file = fs.readFileSync(filePath);
     const fileString = new String(file);
-    return fileString.split("\n").map(s => s.trim());
+    return trim
+        ? fileString.split("\n").map(s => s.trim())
+        : fileString.split("\n");
 }
 
-export function parseData<T>(filePath: string, parser: (line: string) => T): T[] {
-   return readLines(filePath).map(parser);
+export function parseData<T>(filePath: string, parser: (line: string) => T, trim = true): T[] {
+   return readLines(filePath, trim).map(parser);
 }
 
 export function parseDataLine<T>(filePath: string, parser: (line: string) => T, delimiter = ","): T[] {
@@ -168,4 +170,43 @@ export function log<T>(value: T, ...additionalValues: any[]): T {
 
 export function uniqueOn<T>(values: T[], selector: (v: T) => string) {
     return [...new Map(values.map(v => [selector(v), v])).values()];
+}
+
+export function join<TLeft, TRight, TResult>(
+    left: TLeft[],
+    right: TRight[],
+    condition: (left: TLeft, right: TRight) => boolean,
+    result: (left: TLeft, right: TRight) => TResult): TResult[]
+{
+    return left.flatMap(l => right.filter(r => condition(l, r)).map(r => result(l, r)));
+}
+
+export function surroundingCoords(x: number, y: number): Array<[number, number]> {
+    return [[x + 1, y], [x - 1, y], [x, y + 1], [x, y - 1]];
+}
+
+type BfsGoalPredicate<TState> = (state: TState) => boolean;
+type BfsTransitionFunction<TState> = (currentStates: TState) => TState[];
+type BfsHashFunction<TState> = (state: TState) => string | number;
+export function bfs<TState>(
+    initialState: TState[],
+    goalReached: BfsGoalPredicate<TState>,
+    nextStates: BfsTransitionFunction<TState>,
+    hashFunction: BfsHashFunction<TState>
+): TState[] | undefined {
+    const seen = new Set<string | number>();
+    let queue = initialState.map(s => [s]);
+    while (queue.length > 0) {
+        const path = queue.shift()!;
+        const state = last(path);
+        if (goalReached(state)) {
+            return path;
+        }
+        const hash = hashFunction(state);
+        if (seen.has(hash)) {
+            continue;
+        }
+        seen.add(hash);
+        queue.push(...nextStates(state).map(newState => [...path, newState]));
+    }
 }

@@ -3,32 +3,6 @@ import { parseData, log, last, splice, uniqueOn } from "./common";
 const caveMap = parseData("data/day18.data", l => l.split(""));
 const availableKeys = "abcdefghijklmnopqrstuvwxyz".split("").filter(c => caveMap.some(row => row.includes(c)));
 
-type BfsGoalPredicate<TState> = (state: TState) => boolean;
-type BfsTransitionFunction<TState> = (currentStates: TState) => TState[];
-type BfsHashFunction<TState> = (state: TState) => string | number;
-function bfs<TState>(
-    initialState: TState[],
-    goalReached: BfsGoalPredicate<TState>,
-    nextStates: BfsTransitionFunction<TState>,
-    hashFunction: BfsHashFunction<TState>
-): TState[] | undefined {
-    const seen = new Set<string | number>();
-    let queue = initialState.map(s => [s]);
-    while (queue.length > 0) {
-        const path = queue.shift()!;
-        const state = last(path);
-        if (goalReached(state)) {
-            return path;
-        }
-        const hash = hashFunction(state);
-        if (seen.has(hash)) {
-            continue;
-        }
-        seen.add(hash);
-        queue.push(...nextStates(state).map(newState => [...path, newState]));
-    }
-}
-
 const startPos = caveMap.flatMap((row, y) => row.map((c, x) => [x, y] as const))
     .find(([x, y]) => caveMap[y][x] === "@")!;
 
@@ -38,7 +12,6 @@ const isUpperCaseLetter = (c: string) => c.charCodeAt(0) >= "A".charCodeAt(0) &&
 type Position = readonly [number, number];
 type BfsState = Readonly<{ position: Position, keys: string[] }>;
 
-const surroundingCoords = ([x, y]: Position): Position[] => [[x + 1, y], [x - 1, y], [x, y + 1], [x, y - 1]];
 const hasKey = (state: BfsState, key: string) => state.keys.includes(key.toLowerCase());
 const nextStateAt = (state: BfsState, position: Position) => ({
     position,
