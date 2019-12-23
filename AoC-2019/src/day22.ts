@@ -1,4 +1,4 @@
-import { range, parseData, gcd, lcm } from "./common";
+import { parseData, range } from "./common";
 
 const dealIntoStack = (cards: number[]) => cards.reverse();
 

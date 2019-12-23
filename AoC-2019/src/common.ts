@@ -210,3 +210,19 @@ export function bfs<TState>(
         queue.push(...nextStates(state).map(newState => [...path, newState]));
     }
 }
+
+export function toLookUp<TKey extends string | number, TValue>(list: TValue[], keySelector: (value: TValue) => TKey): Record<TKey, TValue[]> {
+    const map = {} as Record<TKey, TValue[]>;
+    for (const v of list) {
+        const key = keySelector(v);
+        if (!map[key]) {
+            map[key] = [];
+        }
+        map[key].push(v);
+    }
+    return map;
+}
+
+export function partitionBySize<T>(list: T[], size: number): Array<T[]> {
+    return range(0, Math.ceil(list.length / size) - 1).map(n => list.slice(n * size, n * size + size));
+}
