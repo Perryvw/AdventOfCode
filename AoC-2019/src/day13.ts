@@ -1,6 +1,5 @@
 import { parseDataLine, splice } from "./common";
-import { programFromMemoryAndInput, execute, ProgramState, addProgramInput, clearOutput } from "./intcode";
-import { stat } from "fs";
+import { addProgramInput, execute, programFromMemoryAndInput, ProgramState } from "./intcode";
 
 const initialMemory = parseDataLine("data/day13.data", parseInt);
 
