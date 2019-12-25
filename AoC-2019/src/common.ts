@@ -226,3 +226,9 @@ export function toLookUp<TKey extends string | number, TValue>(list: TValue[], k
 export function partitionBySize<T>(list: T[], size: number): Array<T[]> {
     return range(0, Math.ceil(list.length / size) - 1).map(n => list.slice(n * size, n * size + size));
 }
+
+export function allSubsets<T>(items: T[]): Array<T[]> {
+    return items.length === 1
+        ? [items, []]
+        : allSubsets(items.slice(1)).flatMap(c => [[items[0], ...c], c]);
+}
