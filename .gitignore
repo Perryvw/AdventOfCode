@@ -1,2 +1,3 @@
 **/node_modules/**/*
 *.js
+aoc-2015/target/
