@@ -1,0 +1,9 @@
+{
+    "compilerOptions": {
+        "strict": true,
+        "target": "esnext",
+        "outDir": "gen",
+        "module": "commonjs"
+    },
+    "include": ["./src"]
+}
