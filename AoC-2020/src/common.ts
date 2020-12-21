@@ -270,6 +270,10 @@ export function intersect<T>(s1: Set<T>, s2: Set<T>): Set<T> {
     return new Set([...s1].filter(x => s2.has(x)));
 }
 
+export function except<T>(s1: Set<T>, s2: Set<T>): Set<T> {
+    return new Set([...s1].filter(x => !s2.has(x)));
+}
+
 export function countItems<T extends string | number>(arr: T[]): Record<T, number> {
     return arr.reduce((dict, item) => {
         if (item in dict) {
