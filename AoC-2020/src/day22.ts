@@ -6,6 +6,8 @@ const [player1inp, player2inp] = readData("data/day22.data").split("\n\n")
 const p1Stack = [...player1inp];
 const p2Stack = [...player2inp];
 
+const score = (deck: number[]) => sum(deck.map((v, i) => v * (deck.length - i)));
+
 while (p1Stack.length > 0 && p2Stack.length > 0) {
     const p1Card = p1Stack.shift()!;
     const p2Card = p2Stack.shift()!;
@@ -18,22 +20,20 @@ while (p1Stack.length > 0 && p2Stack.length > 0) {
 }
 
 const winningDeck = p1Stack.length === 0 ? p2Stack : p1Stack;
-console.log("Part 1:", sum(winningDeck.map((v, i) => v * (winningDeck.length - i))));
+console.log("Part 1:", score(winningDeck));
 
 enum Winner { Player1, Player2 }
 
 function play(deck1: number[], deck2: number[]): Winner {
-    const seen = new Set<string>();
+    const seen = new Set<number>();
     
     while (deck1.length > 0 && deck2.length > 0) {
 
-        const p1hash = `p1:${deck1}`;
-        const p2hash = `p2:${deck2}`;
-        if (seen.has(p1hash) || seen.has(p2hash)) {
+        const hash = score(deck1) + 100000 * score(deck2);
+        if (seen.has(hash)) {
             return Winner.Player1;
         }
-        seen.add(p1hash);
-        seen.add(p2hash);
+        seen.add(hash);
 
         const p1Card = deck1.shift()!;
         const p2Card = deck2.shift()!;
@@ -61,4 +61,4 @@ const p2Stack2 = [...player2inp];
 play(p1Stack2, p2Stack2);
 
 const winningDeck2 = p1Stack2.length === 0 ? p2Stack2 : p1Stack2;
-console.log("Part 2:", sum(winningDeck2.map((v, i) => v * (winningDeck2.length - i))));
+console.log("Part 2:", score(winningDeck2));
