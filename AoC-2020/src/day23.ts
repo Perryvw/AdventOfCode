@@ -2,16 +2,14 @@ import { range, tail } from "./common";
 
 const cups = [9,4,2,3,8,7,6,1,5, ...range(10, 1000000)];
 
-class DoublyLinkedListNode<T> {
-    previous: DoublyLinkedListNode<T>;
-    next: DoublyLinkedListNode<T>;
+class LinkedListNode<T> {
+    next: LinkedListNode<T>;
 
     constructor(public value: T) {
-        this.previous = this;
         this.next = this;
     }
 
-    *iterator(): Generator<DoublyLinkedListNode<T>, DoublyLinkedListNode<T>> {
+    *iterator(): Generator<LinkedListNode<T>, LinkedListNode<T>> {
         let next = this.next;
         while (true) {
             yield next;
@@ -19,7 +17,7 @@ class DoublyLinkedListNode<T> {
         }
     }
 
-    takeNext(num: number): DoublyLinkedListNode<T>[] {
+    takeNext(num: number): LinkedListNode<T>[] {
         const iterator = this.iterator();
 
 
@@ -31,21 +29,18 @@ class DoublyLinkedListNode<T> {
         }
 
         this.next = lastTaken.next;
-        lastTaken.next.previous = this;
         return result;
     }
 
-    insert(node: DoublyLinkedListNode<T>) {
+    insert(node: LinkedListNode<T>) {
         node.next = this.next;
-        this.next.previous = node;
-        node.previous = this;
         this.next = node;
 
         return node;
     }
 
-    insertMultiple(nodes: DoublyLinkedListNode<T>[]) {
-        let node: DoublyLinkedListNode<T> = this;
+    insertMultiple(nodes: LinkedListNode<T>[]) {
+        let node: LinkedListNode<T> = this;
         for (const v of nodes) {
             node = node.insert(v);
         }
@@ -53,7 +48,7 @@ class DoublyLinkedListNode<T> {
 
     find(value: T) {
         if (value === this.value) return this;
-        let node: DoublyLinkedListNode<T> = this.next;
+        let node: LinkedListNode<T> = this.next;
         while (node !== this) {
             if (value === node.value) return node;
             node = node.next;
@@ -61,15 +56,15 @@ class DoublyLinkedListNode<T> {
     }
 }
 
-class CircularDoublyLinkedList<T> {
+class CircularLinkedList<T> {
 
-    first: DoublyLinkedListNode<T>;
+    first: LinkedListNode<T>;
 
     constructor(items: T[]) {
-        this.first = new DoublyLinkedListNode<T>(items[0]);
+        this.first = new LinkedListNode<T>(items[0]);
         let current = this.first;
         for (const item of tail(items)) {
-            const node = new DoublyLinkedListNode(item);
+            const node = new LinkedListNode(item);
             current = current.insert(node);
         }
     }
@@ -95,7 +90,7 @@ function findDestination(currentValue: number, taken: number[], maxIndex: number
     return destination;
 }
 
-const list = new CircularDoublyLinkedList(cups);
+const list = new CircularLinkedList(cups);
 
 const nodeMap = new Map([...list.items()].map(n => [n.value, n]));
 
