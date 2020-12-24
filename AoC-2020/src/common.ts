@@ -234,6 +234,18 @@ export function toLookUp<TKey extends string | number, TValue>(list: TValue[], k
     return map;
 }
 
+export function toBag<TValue>(list: TValue[]): Map<TValue, number> {
+    const result = new Map<TValue, number>();
+    for (const v of list) {
+        if (result.has(v)) {
+            result.set(v, result.get(v)! + 1);
+        } else {
+            result.set(v, 1);
+        }
+    }
+    return result;
+}
+
 export function partitionBySize<T>(list: T[], size: number): Array<T[]> {
     return range(0, Math.ceil(list.length / size) - 1).map(n => list.slice(n * size, n * size + size));
 }
