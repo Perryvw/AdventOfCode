@@ -40,8 +40,8 @@ fn is_horizontal_or_vertical(seg: &LineSegment) -> bool {
 }
 
 fn points(seg: &LineSegment) -> impl Iterator<Item=Point> {
-    let stepx = if seg.from.x == seg.to.x { 0 } else if seg.from.x < seg.to.x { 1 } else { -1 };
-    let stepy = if seg.from.y == seg.to.y { 0 } else if seg.from.y < seg.to.y { 1 } else { -1 };
+    let stepx = (seg.to.x - seg.from.x).signum();
+    let stepy = (seg.to.y - seg.from.y).signum();
     let steps = std::cmp::max((seg.from.x - seg.to.x).abs(), (seg.from.y - seg.to.y).abs()) + 1;
     let startx = seg.from.x;
     let starty = seg.from.y;
