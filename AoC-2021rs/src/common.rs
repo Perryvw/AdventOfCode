@@ -1,17 +1,22 @@
-// use std::fs::File;
-// use std::io::{self, BufRead};
-// use regex::Regex;
+#[derive(PartialEq, Eq, Hash)]
+pub struct Point {
+    pub x : i32,
+    pub y : i32
+}
 
-// pub fn read_lines(file_name: &str) -> impl std::iter::Iterator<Item=std::string::String> {
-//     let file = File::open(file_name).unwrap();
-//     return io::BufReader::new(file).lines().map(|l| l.unwrap());
-// }
+impl std::fmt::Display for Point {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{},{}", self.x, self.y)
+    }
+}
 
-// pub fn parse_lines(file_name: &str, pattern: &str) -> impl std::iter::Iterator<Item=Vec<String>> {
-//     return read_lines(file_name)
-//         .map(move |l| {
-//             let captures = re.captures(&l).unwrap();
-//             let t = (1..captures.len()).map(|i| String::from(captures.get(i).unwrap().as_str())).collect();
-//             return t;
-//         });
-// }
+pub struct LineSegment {
+    pub from : Point,
+    pub to: Point
+}
+
+impl std::fmt::Display for LineSegment {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{} -> {}", self.from, self.to)
+    }
+}

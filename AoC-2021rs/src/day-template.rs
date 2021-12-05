@@ -6,8 +6,10 @@ impl AocSolution for Day3 {
 
     fn data_path(&self) -> &str { "data/day3.txt" }
 
-    // Calculate answer
     fn calculate(&self, input: &String) -> (String, String) {
+
+
+
         return (String::from("?"), String::from("?"))
     }
 }
