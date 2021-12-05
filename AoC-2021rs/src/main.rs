@@ -9,7 +9,7 @@ use std::{fs::File, io::Read};
 
 extern crate lazy_static;
 
-const REPETITIONS: i32 = 10;
+const REPETITIONS: i32 = 200;
 
 const FOCUS: bool = false;
 

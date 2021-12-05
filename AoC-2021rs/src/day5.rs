@@ -1,5 +1,3 @@
-use std::collections::HashMap;
-
 use crate::aoc::AocSolution;
 use crate::common::{Point, LineSegment};
 
@@ -13,36 +11,42 @@ impl AocSolution for Day5 {
         let vents: Vec<LineSegment> = input.lines().map(parse).collect();
 
         // P1
-        let mut map = HashMap::<Point, i16>::new();
-        for vent in vents.iter().filter(|s | is_horizontal_or_vertical(s)) {
+        let mut map = [0 as i8; 1000000];
+        for vent in vents.iter().filter(|s| is_horizontal_or_vertical(s)) {
             for point in points(vent) {
-                *map.entry(point).or_insert(0) += 1;
+                map[hash(&point)] += 1;
             }
         }
-        let num_dangerous_points = map.iter().filter(|(_, v)| **v >= 2).count();
+        let num_dangerous_points = map.iter().filter(|v| **v >= 2).count();
 
         // P2
-        for vent in vents.iter().filter(|s | !is_horizontal_or_vertical(s)) {
+        for vent in vents.iter().filter(|s| !is_horizontal_or_vertical(s)) {
             for point in points(vent) {
-                *map.entry(point).or_insert(0) += 1;
+                map[hash(&point)] += 1;
             }
         }
-        let num_dangerous_points_all = map.iter().filter(|(_, v)| **v >= 2).count();
+        let num_dangerous_points_all = map.iter().filter(|v| **v >= 2).count();
 
         return (num_dangerous_points.to_string(), num_dangerous_points_all.to_string());
     }
+}
+
+fn hash(point: &Point) -> usize {
+    return (point.x * 1000 + point.y) as usize;
 }
 
 fn is_horizontal_or_vertical(seg: &LineSegment) -> bool {
     return seg.from.x == seg.to.x || seg.from.y == seg.to.y;
 }
 
-fn points(seg: &LineSegment) -> Vec<Point> {
+fn points(seg: &LineSegment) -> impl Iterator<Item=Point> {
     let stepx = if seg.from.x == seg.to.x { 0 } else if seg.from.x < seg.to.x { 1 } else { -1 };
     let stepy = if seg.from.y == seg.to.y { 0 } else if seg.from.y < seg.to.y { 1 } else { -1 };
     let steps = std::cmp::max((seg.from.x - seg.to.x).abs(), (seg.from.y - seg.to.y).abs()) + 1;
+    let startx = seg.from.x;
+    let starty = seg.from.y;
 
-    return (0..steps).map(|i| Point { x: seg.from.x + stepx * i, y: seg.from.y + stepy * i }).collect();
+    return (0..steps).map(move |i| Point { x: startx + stepx * i, y: starty + stepy * i });
 }
 
 fn parse(line: &str) -> LineSegment {
