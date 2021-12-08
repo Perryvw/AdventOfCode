@@ -22,12 +22,12 @@ impl AocSolution for Day8 {
         let lines: Vec<Line> = input.lines().map(|l| parse_line(l)).collect();
 
         let p1: usize = lines.iter()
-            .map(|l| l.output.iter()
-                .filter(|word| is1(word) || is4(word) || is7(word) || is8(word))
-                .count()
-            ).sum();
+            .map(|l| l.output.iter().filter(|word| is1(word) || is4(word) || is7(word) || is8(word)).count())
+            .sum();
 
-        let p2: u64 = lines.iter().map(|l| decode_output(l)).sum();
+        let p2: u64 = lines.iter()
+            .map(|l| decode_output(l))
+            .sum();
 
         return (p1.to_string(), p2.to_string())
     }
@@ -88,12 +88,15 @@ fn word_to_key(word: &str) -> DigitKey {
 }
 
 fn overlap(word: &DigitKey, key: &DigitKey) -> usize {
-    return word.iter().enumerate().filter(|(i, v)| **v && key[*i]).count();
+    return word.iter()
+        .enumerate()
+        .filter(|(i, v)| **v && key[*i])
+        .count();
 }
 
 fn parse_line(line: &str) -> Line {
-    let split_input: Vec<&str> = line.split("|").collect();
-    let input_nums: Vec<&str> = split_input[0].split_whitespace().collect();
-    let output_nums: Vec<&str> = split_input[1].split_whitespace().collect();
+    let mut split_input = line.split("|");
+    let input_nums: Vec<&str> = split_input.next().unwrap().split_whitespace().collect();
+    let output_nums: Vec<&str> = split_input.next().unwrap().split_whitespace().collect();
     return Line { input: input_nums, output: output_nums };
 }
