@@ -8,18 +8,19 @@ mod day5;
 mod day6;
 mod day7;
 mod day8;
+mod day9;
 use std::{fs::File, io::Read};
 
 extern crate lazy_static;
 
-const REPETITIONS: i32 = 200;
+const REPETITIONS: i32 = 100;
 
 const FOCUS: bool = false;
 
 fn main() {
     if FOCUS {
         // RUN A SINGLE DAY ONCE
-        let single: Box<dyn aoc::AocSolution> = Box::new(day8::Day8);
+        let single: Box<dyn aoc::AocSolution> = Box::new(day9::Day9);
         println!("\n\n >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> \n");
         run_day(&single, 1);
         println!("\n >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> \n");
@@ -35,6 +36,7 @@ fn main() {
             Box::new(day6::Day6),
             Box::new(day7::Day7),
             Box::new(day8::Day8),
+            Box::new(day9::Day9),
         ];
         run_days(all_days);
     }
