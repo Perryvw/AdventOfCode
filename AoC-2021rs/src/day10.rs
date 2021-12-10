@@ -22,25 +22,22 @@ impl AocSolution for Day10 {
 
     fn calculate(&self, input: &String) -> (String, String) {
 
-        let parsed_lines: Vec<ParseResult> = input.lines().map(parse_line).collect();
+        let mut p1 = 0;
+        let mut autocomplete_scores: Vec<u64> = vec![];
 
-        let p1: u32 = parsed_lines.iter()
-            .map(|result| match result {
-                ParseResult::Corrupt(c) => score(&c),
-                _ => 0
-            })
-            .sum();
-
-        let mut autocomplete_scores: Vec<u64> = parsed_lines.iter()
-            .map(|result| match result {
-                ParseResult::Incomplete(stack) => stack_score(stack),
-                _ => 0
-            })
-            .filter(|s| *s > 0)
-            .collect();
+        for parse_result in input.lines().map(parse_line) {
+            match parse_result {
+                ParseResult::Corrupt(c) => {
+                    p1 += score(&c)
+                },
+                ParseResult::Incomplete(stack) => {
+                    let score = stack_score(&stack);
+                    if score > 0 { autocomplete_scores.push(score) }
+                },
+            }
+        }
 
         autocomplete_scores.sort();
-
         let p2 = autocomplete_scores[autocomplete_scores.len() / 2];
 
         return (p1.to_string(), p2.to_string())
