@@ -21,23 +21,55 @@ impl std::fmt::Display for LineSegment {
     }
 }
 
-// pub struct Grid<'a, T> {
-//     width: usize,
-//     height: usize,
-//     content: &'a Vec<Vec<T>>
-// }
+pub struct GridInfo {
+    pub width: usize,
+    pub height: usize,
+}
 
-// impl<'a, T> Grid<'a, T> {
-//     fn from(v: &Vec<Vec<T>>) -> Grid<T> {
-//         let height = v.len();
-//         let width = if height > 0 { v[0].len() } else { 0 };
-//         return Grid{ width: width, height: height, content: v };
-//     }
+lazy_static! {
+    static ref NEIGHBOURS_4: Vec<(i8, i8)> = vec![
+        (0, -1),
+        (1, 0),
+        (0, 1),
+        (-1, 0),
+    ];
 
-//     fn coords(&self) -> impl Iterator<Item=(usize, usize)> {
-//         let h = self.height;
-//         return (0..self.width).flat_map(move |x| (0..h).map(move |y| (x, y)));
-//     }
+    static ref NEIGHBOURS_8: Vec<(i8, i8)> = vec![
+        (0, -1),
+        (1, -1),
+        (1, 0),
+        (1, 1),
+        (0, 1),
+        (-1, 1),
+        (-1, 0),
+        (-1, -1),
+    ];
+}
 
-//     fn at(&self, x: usize, y: usize) -> &T { &self.content[y][x] }
-// }
+impl GridInfo
+{
+    pub fn new(width: usize, height: usize) -> GridInfo {
+        return GridInfo{ width: width, height: height };
+    }
+
+    pub fn coords(&self) -> impl Iterator<Item=(usize, usize)> {
+        let h = self.height;
+        return (0..self.width).flat_map(move |x| (0..h).map(move |y| (x, y)));
+    }
+
+    pub fn neighbours(&self, x: usize, y: usize) -> impl Iterator<Item=(usize, usize)> {
+        let w = self.width;
+        let h = self.height;
+        return NEIGHBOURS_4.iter()
+            .map(move |(ox, oy)| (x + *ox as usize, y + *oy as usize))
+            .filter(move |(x, y)| *x < w && *y < h);
+    }
+
+    pub fn neighbours_diag(&self, x: usize, y: usize) -> impl Iterator<Item=(usize, usize)> {
+        let w = self.width;
+        let h = self.height;
+        return NEIGHBOURS_8.iter()
+            .map(move |(ox, oy)| (x + *ox as usize, y + *oy as usize))
+            .filter(move |(x, y)| *x < w && *y < h);
+    }
+}

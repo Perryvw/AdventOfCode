@@ -1,6 +1,6 @@
 use std::collections::VecDeque;
 
-use crate::aoc::AocSolution;
+use crate::{aoc::AocSolution, common::GridInfo};
 
 type Coord = (usize, usize);
 
@@ -14,18 +14,17 @@ impl AocSolution for Day9 {
 
         let grid: Vec<Vec<u8>> = input.lines().map(|l| l.as_bytes().iter().map(|b| b - '0' as u8).collect()).collect();
 
-        let width = grid[0].len();
-        let height = grid.len();
+        let grid_info = GridInfo::new(grid[0].len(), grid.len());
 
-        let minima: Vec<Coord> = (0..width).flat_map(|x|
-            (0..height).map(move |y| (x, y)).filter(|(x, y)| smaller_than_neighbours(*x, *y, &grid))
-        ).collect();
+        let minima: Vec<Coord> = grid_info.coords()
+            .filter(|(x, y)| smaller_than_neighbours(*x, *y, &grid, &grid_info))
+            .collect();
 
         let p1: u32 = minima.iter()
             .map(|(x, y)| (grid[*y][*x] + 1) as u32)
             .sum();
 
-        let mut regions = find_basins(&grid);
+        let mut regions = find_basins(&grid, &grid_info);
         regions.sort();
 
         let p2: usize = regions.iter().rev().take(3).product();
@@ -34,29 +33,25 @@ impl AocSolution for Day9 {
     }
 }
 
-fn smaller_than_neighbours(x: usize, y: usize, grid: &Vec<Vec<u8>>) -> bool {
-    let v = grid[y][x];
-    return
-        (x == 0 || v < grid[y][x - 1]) &&
-        (x == grid[0].len() - 1 || v < grid[y][x + 1]) &&
-        (y == 0 || v < grid[y - 1][x]) &&
-        (y == grid.len() - 1 || v < grid[y + 1][x]);
+fn smaller_than_neighbours(x: usize, y: usize, grid: &Vec<Vec<u8>>, grid_info: &GridInfo) -> bool {
+    return grid_info.neighbours(x, y)
+        .all(|(nx, ny)| grid[ny][nx] > grid[y][x]);
 }
 
-fn find_basins(grid: &Vec<Vec<u8>>) -> Vec<usize> {
+fn find_basins(grid: &Vec<Vec<u8>>, grid_info: &GridInfo) -> Vec<usize> {
     let mut seen = Box::<[bool; 1000000]>::from([false; 1000000]);
 
     return (0..grid[0].len()).flat_map(|x| (0..grid.len()).map(move |y| (x, y)))
         .filter_map(|(x, y)| {
             if grid[y][x] < 9 && !seen[hash(x, y)] {
-                Some(region_around(x, y, grid, &mut seen))
+                Some(region_around(x, y, grid, &mut seen, grid_info))
             }
             else { None }
         })
         .collect();
 }
 
-fn region_around(x: usize, y: usize, grid: &Vec<Vec<u8>>, seen: &mut[bool; 1000000]) -> usize {
+fn region_around(x: usize, y: usize, grid: &Vec<Vec<u8>>, seen: &mut[bool; 1000000], grid_info: &GridInfo) -> usize {
     let mut q = VecDeque::default();
     q.push_back((x, y));
 
@@ -65,7 +60,7 @@ fn region_around(x: usize, y: usize, grid: &Vec<Vec<u8>>, seen: &mut[bool; 10000
     while !q.is_empty() {
         let (x, y) = q.pop_front().unwrap();
 
-        for (nx, ny) in neighbours(x, y, grid[0].len(), grid.len()) {
+        for (nx, ny) in grid_info.neighbours(x, y) {
             if grid[ny][nx] < 9 && !seen[hash(nx, ny)] {
                 seen[hash(nx, ny)] = true;
                 size += 1;
@@ -75,15 +70,6 @@ fn region_around(x: usize, y: usize, grid: &Vec<Vec<u8>>, seen: &mut[bool; 10000
     }
 
     return size;
-}
-
-fn neighbours(x: usize, y: usize, width: usize, height: usize) -> Vec<Coord> {
-    let mut coords: Vec<Coord> = vec![];
-    if y > 0 { coords.push((x, y - 1)) }
-    if x < width - 1 { coords.push((x + 1, y)) }
-    if y < height - 1 { coords.push((x, y + 1)) }
-    if x > 0 { coords.push((x - 1, y)) }
-    return coords;
 }
 
 fn hash(x: usize, y: usize) -> usize {
