@@ -64,7 +64,7 @@ fn run_day(answer: &Box<dyn aoc::AocSolution>, repetitions: u16) -> f64 {
     let min_duration = durations.iter().min().unwrap().as_secs_f64() * 1000f64;
     let max_duration = durations.iter().max().unwrap().as_secs_f64() * 1000f64;
 
-    println!("{:15} | p1: {:15} | p2: {:15} | average duration: {:08.4}ms ({:4} repetitions)  | min: {:08.4}ms  | max: {:08.4}ms", answer.data_path(), p1, p2, avg_duration, repetitions, min_duration, max_duration);
+    println!("{:15} | p1: {:15} | p2: {:15} | average duration: {:8.4}ms ({:4} repetitions)  | min: {:8.4}ms  | max: {:8.4}ms", answer.data_path(), p1, p2, avg_duration, repetitions, min_duration, max_duration);
 
     return avg_duration;
 }
