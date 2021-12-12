@@ -1,5 +1,5 @@
 use crate::aoc::AocSolution;
-use hashbrown::{HashMap, HashSet};
+use hashbrown::HashMap;
 
 type NodePair<'a> = (&'a str, &'a str);
 
@@ -17,17 +17,14 @@ impl AocSolution for Day12 {
             adj_list.entry(to).or_insert(vec![]).push(from);
         });
 
-        let seen = HashSet::<&str>::new();
-        let seen2 = HashSet::<&str>::new();
-
-        let p1 = count_paths(vec!["start"], &adj_list, seen, 0);
-        let p2 = count_paths(vec!["start"], &adj_list, seen2, 1);
+        let p1 = count_paths(vec!["start"], &adj_list, vec![], 0);
+        let p2 = count_paths(vec!["start"], &adj_list, vec![], 1);
 
         return (p1.to_string(), p2.to_string());
     }
 }
 
-fn count_paths<'a>(current: Vec<&'a str>, adj_list: &'a HashMap<&str, Vec<&str>>, seen: HashSet<&str>, jokers: u8) -> u32 {
+fn count_paths<'a>(current: Vec<&'a str>, adj_list: &'a HashMap<&str, Vec<&str>>, seen: Vec<&str>, jokers: u8) -> u32 {
     if *current.last().unwrap() == "end" {
         return 1;
     }
@@ -35,22 +32,29 @@ fn count_paths<'a>(current: Vec<&'a str>, adj_list: &'a HashMap<&str, Vec<&str>>
     return adj_list.get(current_node).unwrap().iter()
         .map(|neighbour| {
 
-            let mut new_path = current.clone();
-            new_path.push(neighbour);
-            let mut new_seen = seen.clone();
-
-            if !is_big_cave(current_node) {
-                new_seen.insert(current_node);
-            }
-
-            if seen.contains(*neighbour) && is_small_cave(*neighbour) && jokers > 0 {
-                return count_paths(new_path, adj_list, new_seen, jokers - 1);
-            }
-
-            if seen.contains(*neighbour) {
+            if seen.contains(neighbour) && jokers == 0 {
+                // Smart short-circuit to avoid unnecessary copying
                 return 0;
             }
 
+            let mut new_seen = seen.clone();
+
+            if !is_big_cave(current_node) {
+                new_seen.push(current_node);
+            }
+
+            if seen.contains(neighbour) && is_small_cave(*neighbour) && jokers > 0 {
+                let mut new_path = current.clone();
+                new_path.push(neighbour);
+                return count_paths(new_path, adj_list, new_seen, jokers - 1);
+            }
+
+            if seen.contains(neighbour) {
+                return 0;
+            }
+
+            let mut new_path = current.clone();
+            new_path.push(neighbour);
             return count_paths(new_path, adj_list, new_seen, jokers);
         }).sum();
 }

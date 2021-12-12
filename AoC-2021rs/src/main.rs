@@ -30,18 +30,18 @@ fn main() {
         else {
         // RUN ALL DAYS
         let all_days: Vec<(Box<dyn aoc::AocSolution>, u16)> = vec![
-            (Box::new(day1::Day1), 1000),
-            (Box::new(day2::Day2), 1000),
-            (Box::new(day3::Day3), 1000),
-            (Box::new(day4::Day4), 1000),
-            (Box::new(day5::Day5), 1000),
-            (Box::new(day6::Day6), 1000),
-            (Box::new(day7::Day7), 1000),
+            (Box::new(day1::Day1), 100),
+            (Box::new(day2::Day2), 100),
+            (Box::new(day3::Day3), 100),
+            (Box::new(day4::Day4), 100),
+            (Box::new(day5::Day5), 100),
+            (Box::new(day6::Day6), 100),
+            (Box::new(day7::Day7), 100),
             (Box::new(day8::Day8), 100),
             (Box::new(day9::Day9), 100),
-            (Box::new(day10::Day10), 1000),
+            (Box::new(day10::Day10), 100),
             (Box::new(day11::Day11), 100),
-            (Box::new(day12::Day12), 5),
+            (Box::new(day12::Day12), 10),
         ];
         run_days(all_days);
     }
@@ -64,7 +64,7 @@ fn run_day(answer: &Box<dyn aoc::AocSolution>, repetitions: u16) -> f64 {
     let min_duration = durations.iter().min().unwrap().as_secs_f64() * 1000f64;
     let max_duration = durations.iter().max().unwrap().as_secs_f64() * 1000f64;
 
-    println!("{:15} | p1: {:15} | p2: {:15} | average duration: {:.4}ms ({:4} repetitions)  | min: {:.4}ms  | max: {:.4}ms", answer.data_path(), p1, p2, avg_duration, repetitions, min_duration, max_duration);
+    println!("{:15} | p1: {:15} | p2: {:15} | average duration: {:08.4}ms ({:4} repetitions)  | min: {:08.4}ms  | max: {:08.4}ms", answer.data_path(), p1, p2, avg_duration, repetitions, min_duration, max_duration);
 
     return avg_duration;
 }
