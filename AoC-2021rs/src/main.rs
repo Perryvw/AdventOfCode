@@ -60,7 +60,8 @@ fn run_day(answer: &Box<dyn aoc::AocSolution>, repetitions: u16) -> f64 {
         return start.elapsed();
     }).collect();
 
-    let avg_duration: f64 = durations.iter().map(|d| d.as_secs_f64()).sum::<f64>() * 1000f64 / durations.len() as f64;
+    // Ignore initial slow run for avg
+    let avg_duration: f64 = durations[1..].iter().map(|d| d.as_secs_f64()).sum::<f64>() * 1000f64 / (durations.len() - 1) as f64;
     let min_duration = durations.iter().min().unwrap().as_secs_f64() * 1000f64;
     let max_duration = durations.iter().max().unwrap().as_secs_f64() * 1000f64;
 

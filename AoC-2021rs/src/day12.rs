@@ -17,19 +17,18 @@ impl AocSolution for Day12 {
             adj_list.entry(to).or_insert(vec![]).push(from);
         });
 
-        let p1 = count_paths(vec!["start"], &adj_list, vec![], 0);
-        let p2 = count_paths(vec!["start"], &adj_list, vec![], 1);
+        let p1 = count_paths("start", &adj_list, vec![], 0);
+        let p2 = count_paths("start", &adj_list, vec![], 1);
 
         return (p1.to_string(), p2.to_string());
     }
 }
 
-fn count_paths<'a>(current: Vec<&'a str>, adj_list: &'a HashMap<&str, Vec<&str>>, seen: Vec<&str>, jokers: u8) -> u32 {
-    if *current.last().unwrap() == "end" {
+fn count_paths(current: &str, adj_list: &HashMap<&str, Vec<&str>>, seen: Vec<&str>, jokers: u8) -> u32 {
+    if current == "end" {
         return 1;
     }
-    let current_node = current.last().unwrap();
-    return adj_list.get(current_node).unwrap().iter()
+    return adj_list.get(current).unwrap().iter()
         .map(|neighbour| {
 
             if seen.contains(neighbour) && jokers == 0 {
@@ -39,23 +38,19 @@ fn count_paths<'a>(current: Vec<&'a str>, adj_list: &'a HashMap<&str, Vec<&str>>
 
             let mut new_seen = seen.clone();
 
-            if !is_big_cave(current_node) {
-                new_seen.push(current_node);
+            if !is_big_cave(current) {
+                new_seen.push(current);
             }
 
             if seen.contains(neighbour) && is_small_cave(*neighbour) && jokers > 0 {
-                let mut new_path = current.clone();
-                new_path.push(neighbour);
-                return count_paths(new_path, adj_list, new_seen, jokers - 1);
+                return count_paths(neighbour, adj_list, new_seen, jokers - 1);
             }
 
             if seen.contains(neighbour) {
                 return 0;
             }
 
-            let mut new_path = current.clone();
-            new_path.push(neighbour);
-            return count_paths(new_path, adj_list, new_seen, jokers);
+            return count_paths(neighbour, adj_list, new_seen, jokers);
         }).sum();
 }
 
