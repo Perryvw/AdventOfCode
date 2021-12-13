@@ -15,6 +15,7 @@ mod day9;
 mod day10;
 mod day11;
 mod day12;
+mod day13;
 use std::{fs::File, io::Read};
 
 const FOCUS: bool = false;
@@ -22,7 +23,7 @@ const FOCUS: bool = false;
 fn main() {
     if FOCUS {
         // RUN A SINGLE DAY ONCE
-        let single: Box<dyn aoc::AocSolution> = Box::new(day12::Day12);
+        let single: Box<dyn aoc::AocSolution> = Box::new(day13::Day13);
         println!("\n\n >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> \n");
         run_day(&single, 1);
         println!("\n >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> \n");
@@ -42,6 +43,7 @@ fn main() {
             (Box::new(day10::Day10), 100),
             (Box::new(day11::Day11), 100),
             (Box::new(day12::Day12), 10),
+            (Box::new(day13::Day13), 100),
         ];
         run_days(all_days);
     }
@@ -60,14 +62,20 @@ fn run_day(answer: &Box<dyn aoc::AocSolution>, repetitions: u16) -> f64 {
         return start.elapsed();
     }).collect();
 
-    // Ignore initial slow run for avg
-    let avg_duration: f64 = durations[1..].iter().map(|d| d.as_secs_f64()).sum::<f64>() * 1000f64 / (durations.len() - 1) as f64;
-    let min_duration = durations.iter().min().unwrap().as_secs_f64() * 1000f64;
-    let max_duration = durations.iter().max().unwrap().as_secs_f64() * 1000f64;
+    if repetitions > 1 {
+        // Ignore initial slow run for avg
+        let avg_duration: f64 = durations[1..].iter().map(|d| d.as_secs_f64()).sum::<f64>() * 1000f64 / (durations.len() - 1) as f64;
+        let min_duration = durations.iter().min().unwrap().as_secs_f64() * 1000f64;
+        let max_duration = durations.iter().max().unwrap().as_secs_f64() * 1000f64;
 
-    println!("{:15} | p1: {:15} | p2: {:15} | average duration: {:8.4}ms ({:4} repetitions)  | min: {:8.4}ms  | max: {:8.4}ms", answer.data_path(), p1, p2, avg_duration, repetitions, min_duration, max_duration);
+        println!("{:15} | p1: {:15} | p2: {:15} | average duration: {:8.4}ms ({:4} repetitions)  | min: {:8.4}ms  | max: {:8.4}ms", answer.data_path(), p1, p2, avg_duration, repetitions, min_duration, max_duration);
 
-    return avg_duration;
+        return avg_duration;
+    } else {
+        println!("{:15} | p1: {:15} | p2: {:15}", answer.data_path(), p1, p2);
+
+        return 0f64;
+    }
 }
 
 fn run_days(days: Vec<(Box<dyn aoc::AocSolution>, u16)>) {
