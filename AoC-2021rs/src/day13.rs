@@ -27,7 +27,7 @@ impl AocSolution for Day13 {
         let max_x = p2.iter().map(|(x, _)| *x).max().unwrap();
         let max_y = p2.iter().map(|(_, y)| *y).max().unwrap();
 
-        let mut output: Vec<String> = (0..=max_y).map(|_| (0..=max_x).map(|_| '.').collect::<String>()).collect();
+        let mut output: Vec<String> = (0..=max_y).map(|_| (0..=max_x).map(|_| ' ').collect::<String>()).collect();
 
         for (x, y) in p2 {
             output[y].replace_range(x..=x, "#");
