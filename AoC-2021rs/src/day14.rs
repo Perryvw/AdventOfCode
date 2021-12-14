@@ -64,7 +64,7 @@ fn build_lookup(depth: u16, polymer_map: &PolymerMap) -> Vec<LookupLayer> {
     let mut lookup = vec![initial_layer];
 
     // Dynamic programming: Build lookup for layers up to required depth
-    // counts(left, right, depth) = counts(left, middle, depth - 1) + counts(middle, right, depth - 1)
+    // counts(left, right, depth) = counts(left, middle, depth - 1) + counts(middle, right, depth - 1) - 1x middle char
     for d in 1..depth as usize {
         let mut next_layer: LookupLayer = [[[0; 26]; 26]; 26];
 
