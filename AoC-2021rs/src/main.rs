@@ -16,6 +16,7 @@ mod day10;
 mod day11;
 mod day12;
 mod day13;
+mod day14;
 use std::{fs::File, io::Read};
 
 const FOCUS: bool = false;
@@ -23,7 +24,7 @@ const FOCUS: bool = false;
 fn main() {
     if FOCUS {
         // RUN A SINGLE DAY ONCE
-        let single: Box<dyn aoc::AocSolution> = Box::new(day13::Day13);
+        let single: Box<dyn aoc::AocSolution> = Box::new(day14::Day14);
         println!("\n\n >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> \n");
         run_day(&single, 1);
         println!("\n >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> \n");
@@ -44,6 +45,7 @@ fn main() {
             (Box::new(day11::Day11), 100),
             (Box::new(day12::Day12), 10),
             (Box::new(day13::Day13), 100),
+            (Box::new(day14::Day14), 100),
         ];
         run_days(all_days);
     }
