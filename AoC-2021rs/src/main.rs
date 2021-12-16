@@ -49,7 +49,7 @@ fn main() {
             (Box::new(day13::Day13), 100),
             (Box::new(day14::Day14), 100),
             (Box::new(day15::Day15), 5),
-            (Box::new(day16::Day16), 100),
+            (Box::new(day16::Day16), 1000),
         ];
         run_days(all_days);
     }

@@ -1,8 +1,8 @@
 use crate::aoc::AocSolution;
 
 enum Packet {
-    Literal(u64, u64, usize),
-    Operator(u64, u64, Vec<Packet>, usize),
+    Literal { version: u64, value: u64, length: usize },
+    Operator { version: u64, type_id: u64, subpackets: Vec<Packet>, length: usize },
 }
 
 pub struct Day16;
@@ -23,8 +23,8 @@ impl AocSolution for Day16 {
 
 fn evaluate(packet: &Packet) -> u64 {
     match packet {
-        Packet::Literal(_, value, _) => *value,
-        Packet::Operator(_, type_id, subpackets, _) => match type_id {
+        Packet::Literal{ value, .. } => *value,
+        Packet::Operator{ type_id, subpackets, .. } => match type_id {
             0 => subpackets.iter().map(evaluate).sum(),
             1 => subpackets.iter().map(evaluate).product(),
             2 => subpackets.iter().map(evaluate).min().unwrap(),
@@ -59,10 +59,10 @@ fn parse_operator(version: u64, type_id: u64, bitstream: &mut impl Iterator<Item
             subpackets.push(subpacket);
         }
 
-        return Packet::Operator(version, type_id, subpackets, 22);
+        return Packet::Operator{ version, type_id, subpackets, length: 22 };
     } else {
         let num_subpackets = read_int(11, bitstream);
-        return Packet::Operator(version, type_id, (0..num_subpackets).map(|_| parse_packet(bitstream)).collect(), 18);
+        return Packet::Operator{ version, type_id, subpackets: (0..num_subpackets).map(|_| parse_packet(bitstream)).collect(), length: 18 };
     }
 }
 
@@ -79,20 +79,20 @@ fn parse_literal(version: u64, bitstream: &mut impl Iterator<Item=u8>) -> Packet
     result <<= 4;
     result += read_int(4, bitstream);
 
-    return Packet::Literal(version, result, total_length);
+    return Packet::Literal{ version, value: result, length: total_length };
 }
 
 fn version_sum(packet: &Packet) -> u64 {
     match packet {
-        Packet::Literal(version, _, _) => *version,
-        Packet::Operator(version, _, subpackets, _) => version + subpackets.iter().map(version_sum).sum::<u64>(),
+        Packet::Literal{ version, .. } => *version,
+        Packet::Operator{ version, subpackets, .. } => version + subpackets.iter().map(version_sum).sum::<u64>(),
     }
 }
 
 fn packet_length(packet: &Packet) -> usize {
     match packet {
-        Packet::Literal(_, _, l) => *l,
-        Packet::Operator(_, _, sub_packets, l) => *l + sub_packets.iter().map(packet_length).sum::<usize>()
+        Packet::Literal{ length, .. } => *length,
+        Packet::Operator{ subpackets, length, .. } => *length + subpackets.iter().map(packet_length).sum::<usize>()
     }
 }
 
