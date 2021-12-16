@@ -102,22 +102,8 @@ fn read_int(length: u8, bitstream: &mut impl Iterator<Item=u8>) -> u64 {
 
 fn bits<'a>(inp: &'a str) -> impl Iterator<Item=u8> + 'a{
     inp.as_bytes().iter().flat_map(|b| match b {
-        b'0' => num_bits(0),
-        b'1' => num_bits(1),
-        b'2' => num_bits(2),
-        b'3' => num_bits(3),
-        b'4' => num_bits(4),
-        b'5' => num_bits(5),
-        b'6' => num_bits(6),
-        b'7' => num_bits(7),
-        b'8' => num_bits(8),
-        b'9' => num_bits(9),
-        b'A' => num_bits(10),
-        b'B' => num_bits(11),
-        b'C' => num_bits(12),
-        b'D' => num_bits(13),
-        b'E' => num_bits(14),
-        b'F' => num_bits(15),
+        (b'0'..=b'9') => num_bits(b - b'0'),
+        (b'A'..=b'F') => num_bits(b - b'A' + 10),
         _ => panic!("wup")
     })
 }
