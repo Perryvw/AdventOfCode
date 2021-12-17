@@ -51,7 +51,7 @@ fn main() {
             (Box::new(day14::Day14), 100),
             (Box::new(day15::Day15), 5),
             (Box::new(day16::Day16), 1000),
-            (Box::new(day17::Day17), 1000),
+            (Box::new(day17::Day17), 100),
         ];
         run_days(all_days);
     }

@@ -21,19 +21,19 @@ impl AocSolution for Day17 {
         let miny = re.captures(input).unwrap()[3].parse::<i32>().unwrap();
         let maxy = re.captures(input).unwrap()[4].parse::<i32>().unwrap();
 
-
-        let velocities: Vec<(i32, i32, i32)> = ((minx as f32).sqrt() as i32..=maxx)
-            .flat_map(|velx|
-                (1..200).filter(move |t| minx <= pos_at_time_x(velx, *t) && pos_at_time_x(velx, *t) <= maxx)
+        let velocities: Vec<(i32, i32, i32)> = (miny..=-miny).flat_map(|vely|
+                (1..=-2*miny)
+                    .filter(move |t| miny <= pos_at_time_y(vely, *t) && pos_at_time_y(vely, *t) <= maxy)
                     .flat_map(move |t|
-                    (miny..-miny).filter(move |vely| miny <= pos_at_time_y(*vely, t) && pos_at_time_y(*vely, t) <= maxy)
-                        .map(move |vely| (velx, vely, t))
-                    )
+                        ((minx as f32).sqrt() as i32..=maxx)
+                            .filter(move |velx| minx <= pos_at_time_x(*velx, t) && pos_at_time_x(*velx, t) <= maxx)
+                            .map(move |velx| (velx, vely, t))
+                        )
                 )
             .collect();
 
         let p1 = velocities.iter().map(|(_, vy, _)| sum_1_to_n(*vy)).max().unwrap();
-        let p2 = velocities.iter().unique_by(|(x, y, _)| x * 1000 + y).count();
+        let p2 = velocities.iter().unique_by(|(x, y, _)| x * 10000 + y).count();
 
         return (p1.to_string(), p2.to_string())
     }
