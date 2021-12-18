@@ -20,6 +20,7 @@ mod day14;
 mod day15;
 mod day16;
 mod day17;
+mod day18;
 use std::{fs::File, io::Read};
 
 const FOCUS: bool = false;
@@ -27,7 +28,7 @@ const FOCUS: bool = false;
 fn main() {
     if FOCUS {
         // RUN A SINGLE DAY ONCE
-        let single: Box<dyn aoc::AocSolution> = Box::new(day17::Day17);
+        let single: Box<dyn aoc::AocSolution> = Box::new(day18::Day18);
         println!("\n\n >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> \n");
         run_day(&single, 1);
         println!("\n >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> \n");
@@ -35,23 +36,24 @@ fn main() {
         else {
         // RUN ALL DAYS
         let all_days: Vec<(Box<dyn aoc::AocSolution>, u16)> = vec![
-            (Box::new(day1::Day1), 100),
-            (Box::new(day2::Day2), 100),
-            (Box::new(day3::Day3), 100),
-            (Box::new(day4::Day4), 100),
-            (Box::new(day5::Day5), 100),
-            (Box::new(day6::Day6), 100),
-            (Box::new(day7::Day7), 100),
-            (Box::new(day8::Day8), 100),
-            (Box::new(day9::Day9), 100),
-            (Box::new(day10::Day10), 100),
-            (Box::new(day11::Day11), 100),
-            (Box::new(day12::Day12), 10),
-            (Box::new(day13::Day13), 100),
-            (Box::new(day14::Day14), 100),
-            (Box::new(day15::Day15), 5),
-            (Box::new(day16::Day16), 1000),
-            (Box::new(day17::Day17), 100),
+            // (Box::new(day1::Day1), 100),
+            // (Box::new(day2::Day2), 100),
+            // (Box::new(day3::Day3), 100),
+            // (Box::new(day4::Day4), 100),
+            // (Box::new(day5::Day5), 100),
+            // (Box::new(day6::Day6), 100),
+            // (Box::new(day7::Day7), 100),
+            // (Box::new(day8::Day8), 100),
+            // (Box::new(day9::Day9), 100),
+            // (Box::new(day10::Day10), 100),
+            // (Box::new(day11::Day11), 100),
+            // (Box::new(day12::Day12), 10),
+            // (Box::new(day13::Day13), 100),
+            // (Box::new(day14::Day14), 100),
+            // (Box::new(day15::Day15), 5),
+            // (Box::new(day16::Day16), 1000),
+            // (Box::new(day17::Day17), 100),
+            (Box::new(day18::Day18), 50),
         ];
         run_days(all_days);
     }
