@@ -1,5 +1,3 @@
-use itertools::Itertools;
-
 use crate::aoc::AocSolution;
 use crate::common::GridInfo;
 
@@ -40,7 +38,7 @@ impl AocSolution for Day20 {
 }
 
 fn enhance(image: &Image, enhancement_algorithm: &Vec<bool>, pad_with: bool) -> Image {
-    let padded_image = pad(image, pad_with);
+    let padded_image = pad(image, if enhancement_algorithm[0] { pad_with } else { false });
     let mut new_image = padded_image.clone();
     let grid = GridInfo::new(new_image[0].len(), new_image.len());
 
@@ -55,8 +53,10 @@ fn enhance(image: &Image, enhancement_algorithm: &Vec<bool>, pad_with: bool) -> 
     let border_coords = grid.coords()
         .filter(|(x, y)| *x == 0 || *x == grid.width - 1 || *y == 0 || *y == grid.height -  1);
 
-    for (x, y) in border_coords {
-        new_image[y][x] = !pad_with;
+    if enhancement_algorithm[0] {
+        for (x, y) in border_coords {
+            new_image[y][x] = !pad_with;
+        }
     }
 
     return new_image;
@@ -76,13 +76,6 @@ fn pixel_hash(x: usize, y: usize, image: &Image) -> usize {
     hash += if image[y+1][x+1] { 1 } else { 0 } << 0;
 
     return hash;
-}
-
-fn print(image: &Image) {
-    for line in image.iter() {
-        let line_str = line.iter().map(|v| if *v { "X" } else { "." }).join("");
-        println!("{}", line_str);
-    }
 }
 
 fn pad(image: &Image, pad_with: bool) -> Image {
