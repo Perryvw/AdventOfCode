@@ -72,43 +72,20 @@ lazy_static! {
 
 fn num_wins(p1pos: u8, p1points: u8, p2pos: u8, p2points: u8) -> (u64, u64) {
 
-    if p1points >= WIN_SCORE { return (1, 0) }
-
     let mut p1wins = 0;
     let mut p2wins = 0;
 
     for (increase, count) in DISTRIBUTION.iter() {
         let newpos = (p1pos + increase) % 10;
-        let newscore = p1points + (((p1pos + increase) % 10) + 1);
-        if newscore >= WIN_SCORE {
+        let newpoints = p1points + (((p1pos + increase) % 10) + 1);
+        if newpoints >= WIN_SCORE {
             p1wins += count;
             continue;
         }
-        let (_p1wins, _p2wins) = num_wins2(newpos, newscore, p2pos, p2points);
-        p1wins += _p1wins * count;
-        p2wins += _p2wins * count;
+        let (_p1wins, _p2wins) = num_wins(p2pos, p2points, newpos, newpoints);
+        p1wins += _p2wins * count;
+        p2wins += _p1wins * count;
     }
 
-    return (p1wins, p2wins);
-}
-
-fn num_wins2(p1pos: u8, p1points: u8, p2pos: u8, p2points: u8) -> (u64, u64) {
-
-    if p2points >= WIN_SCORE { return (0, 1) }
-
-    let mut p1wins = 0;
-    let mut p2wins = 0;
-
-    for (increase, count) in DISTRIBUTION.iter() {
-        let newpos = (p2pos + increase) % 10;
-        let newscore = p2points + (((p2pos + increase) % 10) + 1);
-        if newscore >= WIN_SCORE {
-            p2wins += count;
-            continue;
-        }
-        let (_p1wins, _p2wins) = num_wins(p1pos, p1points, newpos, newscore);
-        p1wins += _p1wins * count;
-        p2wins += _p2wins * count;
-    }
     return (p1wins, p2wins);
 }
