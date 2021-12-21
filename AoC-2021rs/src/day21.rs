@@ -6,7 +6,7 @@ pub struct Day21;
 
 impl AocSolution for Day21 {
 
-    fn data_path(&self) -> &str { "data/day3.txt" }
+    fn data_path(&self) -> &str { "data/day21.txt" }
 
     fn calculate(&self, _: &String) -> (String, String) {
 
