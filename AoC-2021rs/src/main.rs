@@ -28,7 +28,7 @@ mod day22;
 mod day23;
 use std::{fs::File, io::Read};
 
-const FOCUS: bool = true;
+const FOCUS: bool = false;
 
 fn main() {
     if FOCUS {
@@ -61,6 +61,8 @@ fn main() {
             (Box::new(day19::Day19), 10),
             (Box::new(day20::Day20), 50),
             (Box::new(day21::Day21), 5),
+            (Box::new(day22::Day22), 50),
+            //(Box::new(day23::Day23), 2),
         ];
         run_days(all_days);
     }
@@ -85,7 +87,7 @@ fn run_day(answer: &Box<dyn aoc::AocSolution>, repetitions: u16) -> f64 {
         let min_duration = durations.iter().min().unwrap().as_secs_f64() * 1000f64;
         let max_duration = durations.iter().max().unwrap().as_secs_f64() * 1000f64;
 
-        println!("{:15} | p1: {:15} | p2: {:15} | average duration: {:8.4}ms ({:4} repetitions)  | min: {:8.4}ms  | max: {:8.4}ms",
+        println!("{:15} | p1: {:18} | p2: {:18} | average duration: {:8.4}ms ({:4} repetitions)  | min: {:8.4}ms  | max: {:8.4}ms",
             answer.data_path(), data_if_fits(&p1), data_if_fits(&p2), avg_duration, repetitions, min_duration, max_duration);
 
         return avg_duration;
@@ -103,7 +105,7 @@ fn run_day(answer: &Box<dyn aoc::AocSolution>, repetitions: u16) -> f64 {
 }
 
 fn data_if_fits(data: &String) -> &str {
-    return if data.len() < 16 { data } else { "<too long>" }
+    return if data.len() < 19 { data } else { "<too long>" }
 }
 
 fn run_days(days: Vec<(Box<dyn aoc::AocSolution>, u16)>) {
