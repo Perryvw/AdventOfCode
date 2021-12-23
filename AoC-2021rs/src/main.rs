@@ -24,14 +24,15 @@ mod day18;
 mod day19;
 mod day20;
 mod day21;
+mod day22;
 use std::{fs::File, io::Read};
 
-const FOCUS: bool = false;
+const FOCUS: bool = true;
 
 fn main() {
     if FOCUS {
         // RUN A SINGLE DAY ONCE
-        let single: Box<dyn aoc::AocSolution> = Box::new(day21::Day21);
+        let single: Box<dyn aoc::AocSolution> = Box::new(day22::Day22);
         println!("\n\n >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> \n");
         run_day(&single, 1);
         println!("\n >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> \n");
