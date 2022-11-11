@@ -70,7 +70,7 @@ size_t part2(const std::string& input)
 AOC_DAY(1)(const std::string& input)
 {
 	return { 
-		std::to_string(part1(input)),
-		std::to_string(part2(input))
+		part1(input),
+		part2(input)
 	};
 }

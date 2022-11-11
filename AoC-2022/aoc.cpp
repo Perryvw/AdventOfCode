@@ -35,6 +35,16 @@ namespace aoc
 		}
 	}
 
+	std::string AnswerString(Answer a)
+	{
+		if (std::holds_alternative<int>(a))
+			return std::to_string(std::get<int>(a));
+		else if (std::holds_alternative<size_t>(a))
+			return std::to_string(std::get<size_t>(a));
+		else
+			return std::get<std::string>(a);
+	}
+
 	void SolveAll()
 	{
 		const auto size = solvers.size();
@@ -64,8 +74,8 @@ namespace aoc
 				auto duration = (std::chrono::high_resolution_clock::now() - start) / BENCHMARK_ITERATIONS;
 				totalDuration += duration;
 
-				std::cout << "    Solution p1: " << solution.first << std::endl;
-				std::cout << "    Solution p2: " << solution.second << std::endl;
+				std::cout << "    Solution p1: " << AnswerString(solution.first) << std::endl;
+				std::cout << "    Solution p2: " << AnswerString(solution.second) << std::endl;
 				std::cout << "  time: " << DisplayTime(duration) << "ms" << std::endl;
 
 				std::cout << std::endl;

@@ -5,8 +5,10 @@
 #include <map>
 #include <memory>
 #include <string>
+#include <variant>
 
-using Solution = std::pair<std::string, std::string>;
+using Answer = std::variant<int, size_t, std::string>;
+using Solution = std::pair<Answer, Answer>;
 
 namespace aoc
 {
