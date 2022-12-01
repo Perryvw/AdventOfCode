@@ -6,7 +6,7 @@
 #include <iostream>
 #include <optional>
 
-const auto BENCHMARK_ITERATIONS = 100;
+const auto BENCHMARK_ITERATIONS = 1000;
 
 namespace aoc
 {
