@@ -1,70 +1,93 @@
 #include "aoc.h"
 
-#include <unordered_set>
-
-int hash(int x, int y)
-{
-	return x * 10000 + y;
-}
-
-int moveAndDeliver(int& x, int& y, char c, std::unordered_set<int>& seen)
-{
-	int delivered = 0;
-
-	switch (c) {
-	case '>': x++; break;
-	case '<': x--; break;
-	case '^': y++; break;
-	case 'v': y--; break;
-	}
-	if (!seen.contains(hash(x, y)))
-		delivered = 1;
-	seen.insert(hash(x, y));
-
-	return delivered;
-}
+#include <array>
+#include <sstream>
 
 size_t part1(const std::string& input)
 {
-	auto x = 0;
-	auto y = 0;
+	std::stringstream ss{ input };
+	std::string line;
 
-	std::unordered_set<int> seen;
-	auto delivered = 1;
-	seen.insert(hash(x, y));
+	uint32_t currentElf = 0;
+	uint32_t maxElf = 0;
 
-	for (auto& c : input)
+	while (std::getline(ss, line))
 	{
-		delivered += moveAndDeliver(x, y, c, seen);
+		if (line.size() > 0)
+		{
+			currentElf += stoi(line);
+		}
+		else
+		{
+			if (currentElf > maxElf)
+			{
+				maxElf = currentElf;
+			}
+			currentElf = 0;
+		}
 	}
 
-	return delivered;
+	if (currentElf > maxElf)
+	{
+		maxElf = currentElf;
+	}
+
+	return maxElf;
 }
 
 size_t part2(const std::string& input)
 {
-	auto x = 0;
-	auto y = 0;
-	auto rx = 0;
-	auto ry = 0;
+	std::stringstream ss{ input };
+	std::string line;
 
-	std::unordered_set<int> seen;
-	auto delivered = 1;
-	seen.insert(hash(x, y));
+	uint32_t currentElf = 0;
+	std::array<uint32_t, 3> maxElves{};
 
-	for (auto i = 0; i < input.size(); i++)
+	while (std::getline(ss, line))
 	{
-		if (i % 2 == 0)
+		if (line.size() > 0)
 		{
-			delivered += moveAndDeliver(x, y, input[i], seen);
+			currentElf += stoi(line);
 		}
 		else
 		{
-			delivered += moveAndDeliver(rx, ry, input[i], seen);
+			if (currentElf > maxElves[0])
+			{
+				maxElves[2] = maxElves[1];
+				maxElves[1] = maxElves[0];
+				maxElves[0] = currentElf;
+			}
+			else if (currentElf > maxElves[1])
+			{
+				maxElves[2] = maxElves[1];
+				maxElves[1] = currentElf;
+			}
+			else if (currentElf > maxElves[2])
+			{
+				maxElves[2] = currentElf;
+			}
+
+			currentElf = 0;
 		}
 	}
 
-	return delivered;
+	if (currentElf > maxElves[0])
+	{
+		maxElves[2] = maxElves[1];
+		maxElves[1] = maxElves[0];
+		maxElves[0] = currentElf;
+	}
+	else if (currentElf > maxElves[1])
+	{
+		maxElves[2] = maxElves[1];
+		maxElves[1] = currentElf;
+	}
+	else if (currentElf > maxElves[2])
+	{
+		maxElves[2] = currentElf;
+	}
+
+	return maxElves[0] + maxElves[1] + maxElves[2];
 }
 
 AOC_DAY(1)(const std::string& input)
