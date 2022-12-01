@@ -73,7 +73,7 @@ AOC_DAY(1)(const std::string& input)
 
 	if (currentElf > 0)
 	{
-		elves.emplace_back(currentElf);
+		elves.emplace_back(currentElf + snack);
 	}
 
 	return {
