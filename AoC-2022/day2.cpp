@@ -3,57 +3,38 @@
 #include <sstream>
 
 constexpr auto OPP_ROCK = 'A';
-constexpr auto OPP_PAPER = 'B';
-constexpr auto OPP_SCISSORS = 'C';
-
 constexpr auto SELF_ROCK = 'X';
-constexpr auto SELF_PAPER = 'Y';
-constexpr auto SELF_SCISSORS = 'Z';
-
 constexpr auto RESULT_LOSE = 'X';
-constexpr auto RESULT_DRAW = 'Y';
-constexpr auto RESULT_WIN = 'Z';
 
-uint32_t Points(char play)
+inline auto Points(char play)
 {
-	switch (play) {
-	case SELF_ROCK: return 1;
-	case SELF_PAPER: return 2;
-	case SELF_SCISSORS: return 3;
-	default: throw std::logic_error{ "Unknown play: " + play };
-	}
+	return play - 'W';
 }
 
-uint32_t PointsResult(char play)
+inline auto PointsResult(char play)
 {
-	switch (play) {
-	case RESULT_LOSE: return 0;
-	case RESULT_DRAW: return 3;
-	case RESULT_WIN: return 6;
-	default: throw std::logic_error{ "Unknown result: " + play };
-	}
+	return (play - RESULT_LOSE) * 3;
 }
 
-auto OutcomeSequence(int index)
+inline auto OutcomeSequence(int index)
 {
 	return 1 - (index % 3);
 }
 
-auto OutcomeOffset(int index)
+inline auto OutcomeOffset(int index)
 {
 	return (4 - index) % 3;
 }
 
-auto Outcome(char opponentPlay, char selfPlay)
+inline auto Outcome(char opponentPlay, char selfPlay)
 {
 	return 3 + 3 * OutcomeSequence(OutcomeOffset(selfPlay - SELF_ROCK) + opponentPlay - OPP_ROCK);
 }
 
-auto Strategy(char opponentPlay, char desiredResult)
+inline auto Strategy(char opponentPlay, char desiredResult)
 {
 	return (opponentPlay - OPP_ROCK + desiredResult - RESULT_LOSE + 2) % 3;
 }
-
 
 AOC_DAY(2)(const std::string& input)
 {
