@@ -37,4 +37,9 @@
       <Filter>Input</Filter>
     </Text>
   </ItemGroup>
+  <ItemGroup>
+    <None Include="day2.inp">
+      <Filter>Input</Filter>
+    </None>
+  </ItemGroup>
 </Project>
