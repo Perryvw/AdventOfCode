@@ -38,14 +38,12 @@ inline auto Strategy(char opponentPlay, char desiredResult)
 
 AOC_DAY(2)(const std::string& input)
 {
-	std::stringstream ss{ input };
-	std::string line;
-
 	int total = 0;
 	int total2 = 0;
 
-	while (std::getline(ss, line))
+	for (auto i = 0; i < input.length(); i += 4)
 	{
+		std::string_view line{ input.c_str() + i, 4 };
 		total += Points(line[2]) + Outcome(line[0], line[2]);
 		total2 += 1 + Strategy(line[0], line[2]) + PointsResult(line[2]);
 	}
