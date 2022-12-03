@@ -67,11 +67,16 @@ namespace aoc
 				std::cout << "Solving day " << day << "... " << (input.has_value() ? "" : "(no input)") << std::endl;
 
 				auto start = std::chrono::high_resolution_clock::now();
+#if _DEBUG
+				solver->Solve(inputStr);
+				auto duration = (std::chrono::high_resolution_clock::now() - start);
+#else
 				for (auto i = 0; i < BENCHMARK_ITERATIONS; i++)
 				{
 					solver->Solve(inputStr);
 				}
 				auto duration = (std::chrono::high_resolution_clock::now() - start) / BENCHMARK_ITERATIONS;
+#endif _DEBUG
 				totalDuration += duration;
 
 				std::cout << "    Solution p1: " << AnswerString(solution.first) << std::endl;

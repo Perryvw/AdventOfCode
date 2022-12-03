@@ -26,6 +26,18 @@
     <ClCompile Include="aoc.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="day3.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="day4.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="day5.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="day6.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="aoc.h">
@@ -39,6 +51,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="day2.inp">
+      <Filter>Input</Filter>
+    </None>
+    <None Include="day3.inp">
       <Filter>Input</Filter>
     </None>
   </ItemGroup>

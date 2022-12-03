@@ -4,39 +4,41 @@
 #include <sstream>
 #include <vector>
 
-size_t part1(const std::vector<uint32_t>& elves)
-{
-	return *std::max_element(elves.begin(), elves.end());
-}
-
-void insertOrdered(std::array<uint32_t, 3>& arr, uint32_t val)
-{
-	if (val > arr[0])
+namespace {
+	size_t part1(const std::vector<uint32_t>& elves)
 	{
-		arr[2] = arr[1];
-		arr[1] = arr[0];
-		arr[0] = val;
+		return *std::max_element(elves.begin(), elves.end());
 	}
-	else if (val > arr[1])
+
+	void insertOrdered(std::array<uint32_t, 3>& arr, uint32_t val)
 	{
-		arr[2] = arr[1];
-		arr[1] = val;
+		if (val > arr[0])
+		{
+			arr[2] = arr[1];
+			arr[1] = arr[0];
+			arr[0] = val;
+		}
+		else if (val > arr[1])
+		{
+			arr[2] = arr[1];
+			arr[1] = val;
+		}
+		else if (val > arr[2])
+		{
+			arr[2] = val;
+		}
 	}
-	else if (val > arr[2])
+
+	size_t part2(const std::vector<uint32_t>& elves)
 	{
-		arr[2] = val;
+		std::array<uint32_t, 3> maxElves{};
+
+		for (auto& elf : elves) {
+			insertOrdered(maxElves, elf);
+		}
+
+		return maxElves[0] + maxElves[1] + maxElves[2];
 	}
-}
-
-size_t part2(const std::vector<uint32_t>& elves)
-{
-	std::array<uint32_t, 3> maxElves{};
-
-	for (auto& elf : elves) {
-		insertOrdered(maxElves, elf);
-	}
-
-	return maxElves[0] + maxElves[1] + maxElves[2];
 }
 
 AOC_DAY(1)(const std::string& input)

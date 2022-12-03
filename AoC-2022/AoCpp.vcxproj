@@ -138,6 +138,10 @@
     <ClCompile Include="aoc.cpp" />
     <ClCompile Include="day1.cpp" />
     <ClCompile Include="day2.cpp" />
+    <ClCompile Include="day3.cpp" />
+    <ClCompile Include="day4.cpp" />
+    <ClCompile Include="day5.cpp" />
+    <ClCompile Include="day6.cpp" />
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -148,6 +152,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="day2.inp" />
+    <None Include="day3.inp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
