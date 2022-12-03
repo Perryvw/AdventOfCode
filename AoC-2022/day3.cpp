@@ -6,31 +6,47 @@
 
 namespace {
 
-	auto part1(const std::string& rucksack)
+	uint64_t tomask(const std::string_view& rucksack)
 	{
-		std::string_view halfString{ rucksack.c_str(), rucksack.length() / 2};
-		std::unordered_set<char> items{ halfString.begin(), halfString.end() };
+		uint64_t m{ 0 };
 
-		for (auto i = rucksack.length() / 2; i < rucksack.length(); ++i) {
-			if (items.count(rucksack[i]) > 0)
+		for (auto& c : rucksack)
+		{
+			m |= 1ull << (c - 'A');
+		}
+
+		return m;
+	}
+
+	char frommask(uint64_t mask)
+	{
+		for (auto i = 0; i < 64; ++i)
+		{
+			if (mask & (1ull << i))
 			{
-				return rucksack[i];
+				return i + 'A';
 			}
 		}
+
+		throw std::logic_error{ "Bit out of range" };
+	}
+
+	auto part1(const std::string& rucksack)
+	{
+		auto halfLength = rucksack.length() / 2;
+		std::string_view halfString{ rucksack.c_str(), halfLength};
+		std::string_view secondHalfString{ rucksack.c_str() + halfLength, halfLength};
+
+		return frommask(tomask(halfString) & tomask(secondHalfString));
 	}
 
 	auto part2(const std::array<std::string, 3>& rucksacks)
 	{
-		std::unordered_set<char> elf1{ rucksacks[0].begin(), rucksacks[0].end() };
-		std::unordered_set<char> elf2{ rucksacks[1].begin(), rucksacks[1].end() };
+		auto elf1 = tomask(rucksacks[0]);
+		auto elf2 = tomask(rucksacks[1]);
+		auto elf3 = tomask(rucksacks[2]);
 
-		for (auto c : rucksacks[2])
-		{
-			if (elf1.count(c) > 0 && elf2.count(c) > 0)
-			{
-				return c;
-			}
-		}
+		return frommask(elf1 & elf2 & elf3);
 	}
 
 	auto priority(char c)
