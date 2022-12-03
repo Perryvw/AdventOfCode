@@ -8,11 +8,8 @@ namespace {
 
 	auto part1(const std::string& rucksack)
 	{
-		std::unordered_set<char> items{};
-
-		for (auto i = 0; i < rucksack.length() / 2; ++i) {
-			items.insert(rucksack[i]);
-		}
+		std::string_view halfString{ rucksack.c_str(), rucksack.length() / 2};
+		std::unordered_set<char> items{ halfString.begin(), halfString.end() };
 
 		for (auto i = rucksack.length() / 2; i < rucksack.length(); ++i) {
 			if (items.count(rucksack[i]) > 0)
