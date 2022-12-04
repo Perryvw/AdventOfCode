@@ -38,9 +38,15 @@
     <ClCompile Include="day6.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="helpers.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="aoc.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="helpers.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -56,5 +62,9 @@
     <None Include="day3.inp">
       <Filter>Input</Filter>
     </None>
+    <None Include="day4.inp">
+      <Filter>Input</Filter>
+    </None>
+    <None Include=".clang-format" />
   </ItemGroup>
 </Project>

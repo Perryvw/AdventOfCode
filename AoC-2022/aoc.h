@@ -7,6 +7,8 @@
 #include <string>
 #include <variant>
 
+#include "helpers.h"
+
 using Answer = std::variant<int, size_t, std::string>;
 using Solution = std::pair<Answer, Answer>;
 
