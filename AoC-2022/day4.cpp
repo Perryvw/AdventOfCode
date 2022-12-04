@@ -35,8 +35,6 @@ AOC_DAY(4)(const std::string& input)
 	ForEachLine(input, [&](auto line) {
 		auto [elf1, elf2] = parsePair(line);
 
-		auto test = 32;
-
 		if ((elf1.first >= elf2.first && elf1.second <= elf2.second) || (elf2.first >= elf1.first && elf2.second <= elf1.second))
 		{
 			p1++;
