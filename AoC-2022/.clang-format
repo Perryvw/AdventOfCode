@@ -17,6 +17,7 @@ BraceWrapping:
   AfterEnum: true
   AfterFunction: true
   AfterNamespace: true
+  BeforeElse: true
 BreakBeforeBraces: Custom
 BreakBeforeBinaryOperators: NonAssignment
 ColumnLimit: 140

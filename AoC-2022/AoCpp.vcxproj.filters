@@ -66,5 +66,8 @@
       <Filter>Input</Filter>
     </None>
     <None Include=".clang-format" />
+    <None Include="day5.inp">
+      <Filter>Input</Filter>
+    </None>
   </ItemGroup>
 </Project>
