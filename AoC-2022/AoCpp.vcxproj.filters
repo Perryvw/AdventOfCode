@@ -69,5 +69,8 @@
     <None Include="day5.inp">
       <Filter>Input</Filter>
     </None>
+    <None Include="day6.inp">
+      <Filter>Input</Filter>
+    </None>
   </ItemGroup>
 </Project>
