@@ -48,7 +48,7 @@ AOC_DAY(5)(const std::string& input)
 		}
 		else
 		{
-			auto amount = std::atoi(line.c_str() + 5);
+			auto amount = std::atoi(line.data() + 5);
 			auto from = line[line.length() - 6] - '1';
 			auto to = line[line.length() - 1] - '1';
 

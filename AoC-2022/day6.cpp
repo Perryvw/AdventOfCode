@@ -1,8 +1,6 @@
 #include "aoc.h"
 
-#include <array>
-#include <sstream>
-#include <vector>
+#include <string_view>
 
 namespace
 {

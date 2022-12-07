@@ -7,7 +7,7 @@
 
 namespace
 {
-	std::pair<std::pair<int, int>, std::pair<int, int>> parsePair(const std::string& s)
+	std::pair<std::pair<int, int>, std::pair<int, int>> parsePair(const std::string_view& s)
 	{
 		auto comma = s.find(',');
 		auto firstMin = s.find('-');
@@ -18,10 +18,10 @@ namespace
 		int c{};
 		int d{};
 
-		std::from_chars(s.c_str(), s.c_str() + firstMin, a);
-		std::from_chars(s.c_str() + firstMin + 1, s.c_str() + comma, b);
-		std::from_chars(s.c_str() + comma + 1, s.c_str() + secondMin, c);
-		std::from_chars(s.c_str() + secondMin + 1, s.c_str() + s.length(), d);
+		std::from_chars(s.data(), s.data() + firstMin, a);
+		std::from_chars(s.data() + firstMin + 1, s.data() + comma, b);
+		std::from_chars(s.data() + comma + 1, s.data() + secondMin, c);
+		std::from_chars(s.data() + secondMin + 1, s.data() + s.length(), d);
 
 		return { { a, b }, { c, d } };
 	}
