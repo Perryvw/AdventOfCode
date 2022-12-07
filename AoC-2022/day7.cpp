@@ -30,7 +30,7 @@ namespace
 		return size;
 	}
 
-	void walkDirectories(const FileSystemEntry& directory, std::function<void(const FileSystemEntry&)> handler)
+	template <typename TFunc> void walkDirectories(const FileSystemEntry& directory, const TFunc& handler)
 	{
 		handler(directory);
 		for (auto& [_, child] : directory.children)
@@ -46,7 +46,7 @@ namespace
 	{
 		long p1 = 0;
 
-		walkDirectories(root, [&](auto dir) {
+		walkDirectories(root, [&](const FileSystemEntry& dir) {
 			auto size = directorySize(dir);
 			if (size <= 100000)
 			{
@@ -64,7 +64,7 @@ namespace
 
 		auto dirToDeleteSize = 70000000;
 
-		walkDirectories(root, [&](auto dir) {
+		walkDirectories(root, [&](const FileSystemEntry& dir) {
 			auto size = directorySize(dir);
 			if (size >= requiredSpace && size < dirToDeleteSize)
 			{
