@@ -62,15 +62,15 @@ namespace aoc
 
 				auto& solver = solvers.at(day);
 
+				auto start = std::chrono::high_resolution_clock::now();
 				auto solution = solver->Solve(input.value_or(""));
 
 				std::cout << "Solving day " << day << "... " << (input.has_value() ? "" : "(no input)") << std::endl;
 
-				auto start = std::chrono::high_resolution_clock::now();
 #if _DEBUG
-				solver->Solve(inputStr);
 				auto duration = (std::chrono::high_resolution_clock::now() - start);
 #else
+				start = std::chrono::high_resolution_clock::now();
 				for (auto i = 0; i < BENCHMARK_ITERATIONS; i++)
 				{
 					solver->Solve(inputStr);
