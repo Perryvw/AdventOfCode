@@ -17,7 +17,7 @@ AOC_DAY(5)(const std::string& input)
 
 	bool parsingStack = true;
 
-	ForEachLine(input, [&](auto line) {
+	ForEachLine(input, [&](const std::string_view& line) {
 		if (line.empty())
 		{
 			auto numStacks = (1 + stackLines[stackLines.size() - 1].length()) / 4;

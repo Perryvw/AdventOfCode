@@ -81,7 +81,7 @@ AOC_DAY(7)(const std::string& input)
 	FileSystemEntry root{ true, 0, nullptr, {} };
 	FileSystemEntry* currentDir = &root;
 
-	ForEachLine(input, [&](auto line) {
+	ForEachLine(input, [&](const std::string_view& line) {
 		if (line[0] == '$' && line[2] == 'c' && line[5] == '.')
 		{
 			currentDir = currentDir->parent;
