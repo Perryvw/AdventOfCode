@@ -1,21 +1,25 @@
 #include "aoc.h"
 #include "helpers.h"
 
+#include <array>
 #include <unordered_set>
 
 namespace
 {
+	constexpr auto NUM_KNOTS = 10;
+
+	inline int sign(int v) { return v == 0 ? 0 : v > 0 ? 1 : -1; }
+
 	long hash(int x, int y) { return x * 100000 + y; }
 }
 
 AOC_DAY(9)(const std::string& input)
 {
-	int head_x = 0;
-	int head_y = 0;
-	int tail_x = 0;
-	int tail_y = 0;
+	std::array<int, NUM_KNOTS> knotX{};
+	std::array<int, NUM_KNOTS> knotY{};
 
 	std::unordered_set<long> seen{};
+	std::unordered_set<long> seen2{};
 
 	ForEachLine(input, [&](const std::string_view& line) {
 		auto num = std::stoi(line.data() + 2);
@@ -23,74 +27,29 @@ AOC_DAY(9)(const std::string& input)
 		for (auto i = 0; i < num; i++)
 		{
 			if (line[0] == 'U')
-				++head_y;
+				++knotY[0];
 			else if (line[0] == 'D')
-				--head_y;
+				--knotY[0];
 			else if (line[0] == 'L')
-				--head_x;
+				--knotX[0];
 			else if (line[0] == 'R')
-				++head_x;
+				++knotX[0];
 
-			if (head_x != tail_x && head_y != tail_y)
+			for (auto knot = 1; knot < NUM_KNOTS; ++knot)
 			{
-				// diagonal move
-				if (head_x - tail_x > 1)
-				{
-					tail_x = head_x - 1;
-					tail_y = head_y;
-				}
-				else if (tail_x - head_x > 1)
-				{
-					tail_x = head_x + 1;
-					tail_y = head_y;
-				}
-				else if (head_y - tail_y > 1)
-				{
-					tail_y = head_y - 1;
-					tail_x = head_x;
-				}
-				else if (tail_x - head_x > 1)
-				{
-					tail_y = head_y + 1;
-					tail_x = head_x;
-				}
-			}
-			else if (head_x != tail_x)
-			{
-				if (head_x > tail_x)
-				{
-					tail_x = head_x - 1;
-				}
-				else
-				{
-					tail_x = head_x + 1;
-				}
-			}
-			else if (head_y != tail_y)
-			{
-				if (head_y > tail_y)
-				{
-					tail_y = head_y - 1;
-				}
-				else
-				{
-					tail_y = head_y + 1;
-				}
-			}
+				auto dx = knotX[knot - 1] - knotX[knot];
+				auto dy = knotY[knot - 1] - knotY[knot];
 
-			seen.insert(hash(tail_x, tail_y));
+				if (dx > 1 || dx < -1 || dy > 1 || dy < -1)
+				{
+					knotX[knot] += sign(dx);
+					knotY[knot] += sign(dy);
+				}
+			}
+			seen.insert(hash(knotX[1], knotY[1]));
+			seen2.insert(hash(knotX[NUM_KNOTS - 1], knotY[NUM_KNOTS - 1]));
 		}
-		std::cout << tail_x << "," << tail_y << " - " << seen.size() << " (" << line << ")" << std::endl;
 	});
 
-	for (auto y = 0; y < 12; y++)
-	{
-		for (auto x = 0; x < 12; x++)
-		{
-			std::cout << (seen.contains(hash(x-6, y-6)) ? "#" : ".");
-		}
-		std::cout << std::endl;
-	}
-
-	return { seen.size(), 0 };
+	return { seen.size(), seen2.size() };
 }
