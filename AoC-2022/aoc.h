@@ -19,12 +19,12 @@ namespace aoc
 		virtual Solution Solve(const std::string& input) = 0;
 	};
 
-	extern std::map<int, std::unique_ptr<Solver>> solvers;
+	extern std::map<int, std::pair<std::unique_ptr<Solver>, bool>> solvers;
 
 	template<typename TSolver> requires std::is_base_of_v<Solver, TSolver>
-	int AoCRegister(int n)
+	int AoCRegister(int n, bool focus)
 	{
-		solvers.emplace(n, std::make_unique<TSolver>());
+		solvers.emplace(n, std::make_pair( std::make_unique<TSolver>(), focus ));
 		return n;
 	}
 
@@ -37,6 +37,16 @@ public:                                                                  \
 	Solution Solve(const std::string& input) override;                   \
 };                                                                       \
                                                                          \
-const int _ = aoc::AoCRegister<AOC_SOLUTION_DAY##day>(day);              \
+const int _ = aoc::AoCRegister<AOC_SOLUTION_DAY##day>(day, false);       \
+                                                                         \
+Solution AOC_SOLUTION_DAY##day::Solve
+
+#define FOCUS_AOC_DAY(day)                                               \
+class AOC_SOLUTION_DAY##day : public aoc::Solver {                       \
+public:                                                                  \
+	Solution Solve(const std::string& input) override;                   \
+};                                                                       \
+                                                                         \
+const int _ = aoc::AoCRegister<AOC_SOLUTION_DAY##day>(day, true);        \
                                                                          \
 Solution AOC_SOLUTION_DAY##day::Solve

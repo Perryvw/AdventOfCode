@@ -10,7 +10,7 @@ const auto BENCHMARK_ITERATIONS = 1000;
 
 namespace aoc
 {
-	std::map<int, std::unique_ptr<Solver>> solvers;
+	std::map<int, std::pair<std::unique_ptr<Solver>, bool>> solvers;
 
 	double DisplayTime(const std::chrono::nanoseconds& ns)
 	{
@@ -53,14 +53,22 @@ namespace aoc
 
 		auto totalDuration = std::chrono::nanoseconds::zero();
 
+		bool anyFocus = std::any_of(solvers.begin(), solvers.end(), [](auto& p) { return p.second.second; });
+
 		for (int day = 0; day < size * 2; day++)
 		{
 			if (solvers.find(day) != solvers.end())
 			{
+				auto& [solver, focus] = solvers.at(day);
+
+				if (anyFocus && !focus)
+				{
+					std::cout << "Skipping not-focussed day " << day << std::endl;
+					continue;
+				}
+
 				auto input = ReadInput(day);
 				auto inputStr = input.value_or("");
-
-				auto& solver = solvers.at(day);
 
 				auto start = std::chrono::high_resolution_clock::now();
 				auto solution = solver->Solve(input.value_or(""));
@@ -70,12 +78,13 @@ namespace aoc
 #if _DEBUG
 				auto duration = (std::chrono::high_resolution_clock::now() - start);
 #else
+				auto iterations = focus ? BENCHMARK_ITERATIONS * 100 : BENCHMARK_ITERATIONS;
 				start = std::chrono::high_resolution_clock::now();
-				for (auto i = 0; i < BENCHMARK_ITERATIONS; i++)
+				for (auto i = 0; i < iterations; i++)
 				{
 					solver->Solve(inputStr);
 				}
-				auto duration = (std::chrono::high_resolution_clock::now() - start) / BENCHMARK_ITERATIONS;
+				auto duration = (std::chrono::high_resolution_clock::now() - start) / iterations;
 #endif _DEBUG
 				totalDuration += duration;
 

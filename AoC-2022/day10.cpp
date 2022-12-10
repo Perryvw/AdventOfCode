@@ -51,11 +51,12 @@ AOC_DAY(10)(const std::string& input)
 	});
 
 	std::stringstream p2;
-	for (auto y = 0; y < SCREEN_HEIGHT; y++)
+	p2 << std::endl;
+	for (auto y = 0; y < SCREEN_HEIGHT; ++y)
 	{
-		for (auto x = 0; x < SCREEN_WIDTH; x++)
+		for (auto x = 0; x < SCREEN_WIDTH; ++x)
 		{
-			p2 << (display[y * SCREEN_WIDTH + x] ? '#' : '.');
+			p2 << (display[y * SCREEN_WIDTH + x] ? '#' : ' ');
 		}
 		p2 << std::endl;
 	}
