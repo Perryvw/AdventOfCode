@@ -4,6 +4,7 @@
 #include <algorithm>
 #include <deque>
 #include <string>
+#include <variant>
 
 namespace
 {
@@ -13,38 +14,39 @@ namespace
 	struct Monkey {
 		int inspectCount;
 		std::deque<uint64_t> items;
-		std::string operation;
+		char op;
+		std::variant<char, int> operand;
 		int testDivisibleBy;
 		int ifTrue;
 		int ifFalse;
 	};
 
-	uint64_t operate(const std::string& operation, uint64_t item)
+	uint64_t operate(const Monkey& monkey, uint64_t item)
 	{
-		if (operation[0] == '*')
+		if (monkey.op == '*')
 		{
-			if (operation[2] == 'o')
+			if (std::holds_alternative<char>(monkey.operand))
 			{
 				return item * item;
 			}
 			else
 			{
-				return item * std::stoi(operation.data() + 2);
+				return item * std::get<int>(monkey.operand);
 			}
 		}
-		else if (operation[0] == '+')
+		else if (monkey.op == '+')
 		{
-			if (operation[2] == 'o')
+			if (std::holds_alternative<char>(monkey.operand))
 			{
 				return item + item;
 			}
 			else
 			{
-				return item + std::stoi(operation.data() + 2);
+				return item + std::get<int>(monkey.operand);
 			}
 		}
 
-		throw "unknown operator: " + std::string{ operation[0] };
+		throw "unknown operator: " + std::string{ monkey.op };
 	}
 
 	uint64_t monkeyBusiness(const std::vector<Monkey>& monkeys)
@@ -70,7 +72,7 @@ namespace
 					auto item = monkey.items.front();
 					monkey.items.pop_front();
 
-					auto worry = operate(monkey.operation, item);
+					auto worry = operate(monkey, item);
 					worry = worry / 3;
 
 					if (worry % monkey.testDivisibleBy == 0)
@@ -86,10 +88,6 @@ namespace
 		}
 
 		return monkeyBusiness(monkeys);
-	}
-
-	inline uint64_t fast_mod(const uint64_t input, const uint64_t ceil) {
-		return input >= ceil ? input % ceil : input;
 	}
 
 	uint64_t part2(std::vector<Monkey> monkeys)
@@ -111,8 +109,8 @@ namespace
 					auto item = monkey.items.front();
 					monkey.items.pop_front();
 
-					auto worry = operate(monkey.operation, item);
-					worry = fast_mod(worry, monkeymod);
+					auto worry = operate(monkey, item);
+					worry = worry % monkeymod;
 
 					if (worry % monkey.testDivisibleBy == 0)
 					{
@@ -165,7 +163,15 @@ AOC_DAY_REPS(11, 100)(const std::string& input)
 		else if (lineLocal == 2)
 		{
 			// operation
-			monkey.operation = line.substr(23);
+			monkey.op = line[23];
+			if (line[25] == 'o')
+			{
+				monkey.operand = 'o';
+			}
+			else
+			{
+				monkey.operand = std::stoi(line.data() + 25);
+			}
 		}
 		else if (lineLocal == 3)
 		{
