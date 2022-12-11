@@ -70,15 +70,16 @@ namespace aoc
 				auto input = ReadInput(day);
 				auto inputStr = input.value_or("");
 
+				std::cout << "Solving day " << day << "... " << (input.has_value() ? "" : "(no input)") << std::endl;
+
 				auto start = std::chrono::high_resolution_clock::now();
 				auto solution = solver->Solve(input.value_or(""));
-
-				std::cout << "Solving day " << day << "... " << (input.has_value() ? "" : "(no input)") << std::endl;
 
 #if _DEBUG
 				auto duration = (std::chrono::high_resolution_clock::now() - start);
 #else
-				auto iterations = focus ? BENCHMARK_ITERATIONS * 100 : BENCHMARK_ITERATIONS;
+				auto iterations = solver->benchmarkRepetitions.value_or(BENCHMARK_ITERATIONS);
+				std::cout << "(" << iterations << " iterations)" << std::endl;
 				start = std::chrono::high_resolution_clock::now();
 				for (auto i = 0; i < iterations; i++)
 				{
