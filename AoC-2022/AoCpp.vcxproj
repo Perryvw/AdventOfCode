@@ -139,6 +139,7 @@
     <ClCompile Include="day1.cpp" />
     <ClCompile Include="day10.cpp" />
     <ClCompile Include="day11.cpp" />
+    <ClCompile Include="day12.cpp" />
     <ClCompile Include="day2.cpp" />
     <ClCompile Include="day3.cpp" />
     <ClCompile Include="day4.cpp" />
@@ -162,6 +163,7 @@
     <None Include=".clang-format" />
     <None Include="day10.inp" />
     <None Include="day11.inp" />
+    <None Include="day12.inp" />
     <None Include="day2.inp" />
     <None Include="day3.inp" />
     <None Include="day4.inp" />
