@@ -16,7 +16,7 @@ namespace
 		std::vector<std::variant<int, Packet>> children;
 	};
 
-	Packet parsePacket(const std::string_view& str, int& offset)
+	Packet parsePacket(std::string_view str, int& offset)
 	{
 		Packet result{};
 
@@ -35,7 +35,7 @@ namespace
 			}
 			else
 			{
-				auto num = std::stoi(str.data() + offset);
+				auto num = parseInt(str.substr(offset));
 				result.children.emplace_back(num);
 				if (num == 0)
 				{
@@ -117,7 +117,7 @@ AOC_DAY(13)(const std::string& input)
 {
 	std::vector<Packet> packets;
 
-	ForEachLine(input, [&](const std::string_view& line) {
+	ForEachLine(input, [&](std::string_view line) {
 		if (!line.empty())
 		{
 			int offset = 0;

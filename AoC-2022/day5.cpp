@@ -17,7 +17,7 @@ AOC_DAY(5)(const std::string& input)
 
 	bool parsingStack = true;
 
-	ForEachLine(input, [&](const std::string_view& line) {
+	ForEachLine(input, [&](std::string_view line) {
 		if (line.empty())
 		{
 			auto numStacks = (1 + stackLines[stackLines.size() - 1].length()) / 4;
@@ -48,7 +48,7 @@ AOC_DAY(5)(const std::string& input)
 		}
 		else
 		{
-			auto amount = std::atoi(line.data() + 5);
+			auto amount = parseInt(line.substr(5));
 			auto from = line[line.length() - 6] - '1';
 			auto to = line[line.length() - 1] - '1';
 

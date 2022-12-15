@@ -100,7 +100,7 @@ AOC_DAY(14)(const std::string& input)
 
 	long maxy = 0;
 
-	ForEachLine(input, [&](const std::string_view& line) {
+	ForEachLine(input, [&](std::string_view line) {
 		auto lineStr = line.data();
 		auto endPtr = const_cast<char*>(lineStr);
 

@@ -21,7 +21,7 @@ AOC_DAY(9)(const std::string& input)
 	std::unordered_set<long> seen{};
 	std::unordered_set<long> seen2{};
 
-	ForEachLine(input, [&](const std::string_view& line) {
+	ForEachLine(input, [&](std::string_view line) {
 		auto num = std::stoi(line.data() + 2);
 
 		for (auto i = 0; i < num; i++)

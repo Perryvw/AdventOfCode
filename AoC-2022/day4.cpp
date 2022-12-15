@@ -7,7 +7,7 @@
 
 namespace
 {
-	std::pair<std::pair<int, int>, std::pair<int, int>> parsePair(const std::string_view& s)
+	std::pair<std::pair<int, int>, std::pair<int, int>> parsePair(std::string_view s)
 	{
 		auto comma = s.find(',');
 		auto firstMin = s.find('-');
@@ -32,7 +32,7 @@ AOC_DAY(4)(const std::string& input)
 	size_t p1 = 0;
 	size_t p2 = 0;
 
-	ForEachLine(input, [&](const std::string_view& line) {
+	ForEachLine(input, [&](std::string_view line) {
 		auto [elf1, elf2] = parsePair(line);
 
 		if ((elf1.first >= elf2.first && elf1.second <= elf2.second) || (elf2.first >= elf1.first && elf2.second <= elf1.second))

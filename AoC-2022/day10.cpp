@@ -35,7 +35,7 @@ AOC_DAY(10)(const std::string& input)
 		}
 	};
 
-	ForEachLine(input, [&](const std::string_view& line) {
+	ForEachLine(input, [&](std::string_view line) {
 		if (line[0] == 'n')
 		{
 			incrementCycle();
@@ -43,7 +43,7 @@ AOC_DAY(10)(const std::string& input)
 
 		if (line[0] == 'a')
 		{
-			auto num = std::stoi(line.data() + 4);
+			auto num = parseInt(line.substr(4));
 			incrementCycle();
 			incrementCycle();
 			x += num;

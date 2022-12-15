@@ -133,7 +133,7 @@ AOC_DAY_REPS(11, 100)(const std::string& input)
 	int lineIndex = 0;
 	std::vector<Monkey> monkeys;
 
-	ForEachLine(input, [&](const std::string_view& line) {
+	ForEachLine(input, [&](std::string_view line) {
 		auto lineLocal = lineIndex % 7;
 		if (lineLocal == 0)
 		{
@@ -148,7 +148,7 @@ AOC_DAY_REPS(11, 100)(const std::string& input)
 		{
 			// items
 			auto offset = 18;
-			auto item = std::stol(line.data() + offset);
+			auto item = parseInt(line.substr(offset));
 			while (item > 0)
 			{
 				monkey.items.push_back(item);
@@ -157,7 +157,7 @@ AOC_DAY_REPS(11, 100)(const std::string& input)
 				{
 					break;
 				}
-				item = std::stoi(line.data() + offset);
+				item = parseInt(line.substr(offset));
 			}
 		}
 		else if (lineLocal == 2)
@@ -170,23 +170,23 @@ AOC_DAY_REPS(11, 100)(const std::string& input)
 			}
 			else
 			{
-				monkey.operand = std::stoi(line.data() + 25);
+				monkey.operand = parseInt(line.substr(25));
 			}
 		}
 		else if (lineLocal == 3)
 		{
 			// test
-			monkey.testDivisibleBy = std::stoi(line.data() + 21);
+			monkey.testDivisibleBy = parseInt(line.substr(21));
 		}
 		else if (lineLocal == 4)
 		{
 			// if true
-			monkey.ifTrue = std::stoi(line.data() + 29);
+			monkey.ifTrue = parseInt(line.substr(29));
 		}
 		else if (lineLocal == 5)
 		{
 			// if false
-			monkey.ifFalse = std::stoi(line.data() + 29);
+			monkey.ifFalse = parseInt(line.substr(29));
 		}
 
 		++lineIndex;

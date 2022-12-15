@@ -6,7 +6,7 @@
 
 namespace {
 
-	uint64_t tomask(const std::string_view& rucksack)
+	uint64_t tomask(std::string_view rucksack)
 	{
 		uint64_t m{ 0 };
 

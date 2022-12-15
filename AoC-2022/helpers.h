@@ -1,15 +1,28 @@
 #pragma once
 
 #include <functional>
-#include <sstream>
+#include <string_view>
 
 template <typename TFunc> void ForEachLine(const std::string& s, const TFunc& handler)
 {
-	std::istringstream ss{ s };
-	std::string line;
-
-	while (std::getline(ss, line))
+	size_t lineStart = 0;
+	size_t i = 0;
+	for (; i < s.length(); ++i)
 	{
-		handler(std::string_view{ line });
+		if (s[i] == '\r')
+		{
+			handler(std::string_view{ s.data() + lineStart, i - lineStart });
+			lineStart = i + 2;
+			i++;
+			continue;
+		}
+		else if (s[i] == '\n')
+		{
+			handler(std::string_view{ s.data() + lineStart, i - lineStart });
+			lineStart = i + 1;
+		}
 	}
+	handler(std::string_view{ s.data() + lineStart, i - lineStart });
 }
+
+int parseInt(std::string_view s);
