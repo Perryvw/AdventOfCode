@@ -2,7 +2,6 @@
 #include "helpers.h"
 
 #include <algorithm>
-#include <unordered_set>
 
 namespace
 {
@@ -121,7 +120,7 @@ namespace
 	}
 }
 
-AOC_DAY_REPS(15, 10)(const std::string& input)
+AOC_DAY_REPS(15, 5)(const std::string& input)
 {
 	std::vector<Sensor> sensors;
 
