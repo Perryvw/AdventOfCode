@@ -119,7 +119,7 @@ namespace
 	}
 }
 
-FOCUS_AOC_DAY(18)(const std::string& input)
+AOC_DAY(18)(const std::string& input)
 {
 	std::vector<Point3D> droplets;
 

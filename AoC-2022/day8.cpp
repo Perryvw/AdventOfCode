@@ -127,8 +127,8 @@ namespace
 
 AOC_DAY(8)(const std::string& input)
 {
-	int width = input.find('\n');
-	int height = (input.length() + 1) / (width + 1);
+	auto width = static_cast<int>(input.find('\n'));
+	auto height = static_cast<int>((input.length() + 1) / (width + 1));
 
 	return { part1(input, width, height), part2(input, width, height) };
 }

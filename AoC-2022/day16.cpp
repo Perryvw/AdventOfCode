@@ -304,7 +304,7 @@ AOC_DAY_REPS(16, 1)(const std::string& input)
 
 	ForEachLine(input, [&](std::string_view line) {
 		auto name = std::string{ line.substr(6, 2) };
-		int nameId = names.size();
+		int nameId = static_cast<int>(names.size());
 
 		if (names.contains(name))
 		{

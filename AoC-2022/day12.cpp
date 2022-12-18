@@ -11,8 +11,8 @@ namespace
 
 AOC_DAY(12)(const std::string& input)
 {
-	int width = input.find('\n');
-	int height = (input.length() + 1) / (width + 1);
+	auto width = input.find('\n');
+	auto height = (input.length() + 1) / (width + 1);
 
 	auto heightAt = [&](const Coord& c) {
 		auto h = input[c.first + (width + 1) * c.second];
@@ -29,13 +29,13 @@ AOC_DAY(12)(const std::string& input)
 		return diff <= 1;
 	};
 
-	int start = input.find('S');
-	int startX = start % (width + 1);
-	int startY = start / (width + 1);
+	auto start = input.find('S');
+	auto startX = static_cast<int>(start % (width + 1));
+	auto startY = static_cast<int>(start / (width + 1));
 
-	int goal = input.find('E');
-	int goalX = goal % (width + 1);
-	int goalY = goal / (width + 1);
+	auto goal = input.find('E');
+	auto goalX = static_cast<int>(goal % (width + 1));
+	auto goalY = static_cast<int>(goal / (width + 1));
 
 	std::vector<Coord> current;
 	std::vector<Coord> next{ Coord{ goalX, goalY} };

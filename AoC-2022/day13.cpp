@@ -43,7 +43,7 @@ namespace
 				}
 				else
 				{
-					offset += std::floor(log10(num)) + 1;
+					offset += static_cast<int>(std::floor(log10(num))) + 1;
 				}
 			}
 		}

@@ -17,7 +17,7 @@ namespace
 	{
 		auto rockWidth = rock.at(0).size();
 		auto rockHeight = rock.size();
-		auto visHeight = cave.size() + 7;
+		auto visHeight = static_cast<int>(cave.size()) + 7;
 		for (int cy = visHeight - 1; cy >= 0; --cy)
 		{
 			if (y <= cy && cy < y + rockHeight)
@@ -114,8 +114,8 @@ AOC_DAY_REPS(17, 50)(const std::string& input)
 	auto* rockType = &rocks.at(rock % rocks.size());
 	auto rockWidth = rockType->at(0).size();
 	auto rockHeight = rockType->size();
-	auto x = 2;
-	auto y = cave.size() + 3;
+	int x = 2;
+	int y = static_cast<int>(cave.size()) + 3;
 
 	uint64_t p1 = 0;
 	uint64_t p2 = 0;
@@ -184,7 +184,7 @@ AOC_DAY_REPS(17, 50)(const std::string& input)
 			rockWidth = rockType->at(0).size();
 			rockHeight = rockType->size();
 			x = 2;
-			y = cave.size() + 3;
+			y = static_cast<int>(cave.size()) + 3;
 
 			if (cave.size() > HASH_SIZE)
 			{

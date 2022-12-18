@@ -81,7 +81,7 @@ namespace aoc
 				auto iterations = solver->benchmarkRepetitions.value_or(BENCHMARK_ITERATIONS);
 				std::cout << "(" << iterations << " iterations)" << std::endl;
 				start = std::chrono::high_resolution_clock::now();
-				for (auto i = 0; i < iterations; i++)
+				for (unsigned int i = 0; i < iterations; i++)
 				{
 					solver->Solve(inputStr);
 				}
