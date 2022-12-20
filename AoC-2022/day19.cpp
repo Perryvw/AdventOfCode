@@ -224,7 +224,7 @@ namespace {
 	}
 }
 
-FOCUS_AOC_DAY(19)(const std::string& input)
+AOC_DAY(19)(const std::string& input)
 {
 	std::vector<Blueprint> blueprints;
 
