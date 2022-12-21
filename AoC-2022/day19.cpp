@@ -4,11 +4,12 @@
 #include <queue>
 #include <unordered_set>
 
-namespace {
-	constexpr auto TOTAL_MINUTES = 24;
+namespace
+{
+	constexpr auto P1_MINUTES = 24;
+	constexpr auto P2_MINUTES = 32;
 
-	struct Blueprint
-	{
+	struct Blueprint {
 		int OreRobotOreCost;
 		int ClayRobotOreCost;
 		int ObsidianRobotOreCost;
@@ -17,8 +18,13 @@ namespace {
 		int GeodeRobotObsidianCost;
 	};
 
-	struct Resources
-	{
+	struct Maxes {
+		int maxOreCost;
+		int maxClayCost;
+		int maxObsidianCost;
+	};
+
+	struct Resources {
 		int t;
 		int OreRobots;
 		int ClayRobots;
@@ -29,71 +35,62 @@ namespace {
 		int Clay;
 		int Obsidian;
 		int Geodes;
+
+		int priority() const
+		{
+			return GeodeRobots * 1000 + ObsidianRobots * 100 + ClayRobots * 10;
+			/*auto rOreClay = 9.0f / 14.0f;
+			auto rOreOb = 9.0f / 7.0f;
+			auto rClayOb = 14.0f / 7.0f;
+
+			auto actualOC = (OreRobots + 1) / static_cast<float>(ClayRobots + 1);
+			auto actualOO = (OreRobots + 1) / static_cast<float>(ObsidianRobots + 1);
+			auto actualCO = (ClayRobots + 1) / static_cast<float>(ObsidianRobots + 1);
+
+			return 20 * GeodeRobots + 5*ObsidianRobots + 3*ClayRobots + OreRobots - std::abs(actualOC - rOreClay) - std::abs(actualOO -
+			rOreOb) - std::abs(actualCO - rClayOb);*/
+		}
+
+		bool operator<(const Resources& rhs) const { return priority() < rhs.priority(); }
 	};
 
 	uint64_t hash(const Resources& r)
 	{
-		return static_cast<uint64_t>(r.t) << 32 + r.OreRobots << 24 + r.ClayRobots << 16 + r.ObsidianRobots << 8 + r.GeodeRobots;
+		auto robotsHash = (r.OreRobots << 24) | (r.ClayRobots << 16) | (r.ObsidianRobots << 8) | r.GeodeRobots;
+		auto resourceHash = (r.Ore << 24) | (r.Clay << 16) | (r.Obsidian << 8) | r.Geodes;
+		return (static_cast<uint64_t>(robotsHash) << 32) | resourceHash;
 	}
 
-	int hashRobots(const Resources& r)
-	{
-		return r.OreRobots << 24 + r.ClayRobots << 16 + r.ObsidianRobots << 8 + r.GeodeRobots;
-	}
+	int hashRobots(const Resources& r) { return (r.OreRobots << 24) | (r.ClayRobots << 16) | (r.ObsidianRobots << 8) | r.GeodeRobots; }
 
-	std::vector<Resources> spendingCombinations(const Resources& r, const Blueprint& bp)
+	std::vector<Resources> spendingCombinations(const Resources& r, const Blueprint& bp, const Maxes& maxes)
 	{
 		std::vector<Resources> result;
 		result.emplace_back(r);
-		std::unordered_set<int> seen;
 
-		if (r.Ore >= bp.OreRobotOreCost)
+		if (r.Ore >= bp.OreRobotOreCost && r.OreRobots < maxes.maxOreCost)
 		{
-			Resources newState{r};
+			Resources newState{ r };
 			newState.Ore -= bp.OreRobotOreCost;
 			newState.OreRobots++;
-			for (auto& s : spendingCombinations(newState, bp))
-			{
-				auto hash = hashRobots(s);
-				if (!seen.contains(hash))
-				{
-					seen.emplace(hash);
-					result.emplace_back(s);
-				}
-			}
+			result.emplace_back(std::move(newState));
 		}
 
-		if (r.Ore >= bp.ClayRobotOreCost)
+		if (r.Ore >= bp.ClayRobotOreCost && r.ClayRobots < maxes.maxClayCost)
 		{
 			Resources newState{ r };
 			newState.Ore -= bp.ClayRobotOreCost;
 			newState.ClayRobots++;
-			for (auto& s : spendingCombinations(newState, bp))
-			{
-				auto hash = hashRobots(s);
-				if (!seen.contains(hash))
-				{
-					seen.emplace(hash);
-					result.emplace_back(s);
-				}
-			}
+			result.emplace_back(std::move(newState));
 		}
 
-		if (r.Ore >= bp.ObsidianRobotOreCost && r.Clay >= bp.ObsidianRobotClayCost)
+		if (r.Ore >= bp.ObsidianRobotOreCost && r.Clay >= bp.ObsidianRobotClayCost && r.ObsidianRobots < maxes.maxObsidianCost)
 		{
 			Resources newState{ r };
 			newState.Ore -= bp.ObsidianRobotOreCost;
 			newState.Clay -= bp.ObsidianRobotClayCost;
 			newState.ObsidianRobots++;
-			for (auto& s : spendingCombinations(newState, bp))
-			{
-				auto hash = hashRobots(s);
-				if (!seen.contains(hash))
-				{
-					seen.emplace(hash);
-					result.emplace_back(s);
-				}
-			}
+			result.emplace_back(std::move(newState));
 		}
 
 		if (r.Ore >= bp.GeodeRobotOreCost && r.Obsidian >= bp.GeodeRobotObsidianCost)
@@ -102,67 +99,27 @@ namespace {
 			newState.Ore -= bp.GeodeRobotOreCost;
 			newState.Obsidian -= bp.GeodeRobotObsidianCost;
 			newState.GeodeRobots++;
-			for (auto& s : spendingCombinations(newState, bp))
-			{
-				auto hash = hashRobots(s);
-				if (!seen.contains(hash))
-				{
-					seen.emplace(hash);
-					result.emplace_back(s);
-				}
-			}
+			result.emplace_back(std::move(newState));
 		}
 
 		return result;
 	}
 
-	auto divRoundUp(int a, int b)
-	{
-		return (a + b - 1) / b;
-	}
+	int timeLeft(const Resources& r, unsigned totalTime) { return static_cast<int>(totalTime) - r.t; }
 
-	auto timeLeft(const Resources& r)
-	{
-		return TOTAL_MINUTES - r.t;
-	}
-
-	auto heuristic_firstClayRobotProducedAt(const Resources& r, const Blueprint& bp)
-	{
-		if (r.ClayRobots > 0) return 0;
-		if (r.Ore > bp.ClayRobotOreCost) return r.t + 1;
-
-		return r.t + 1 + divRoundUp(bp.ClayRobotOreCost - r.Ore, r.OreRobots);
-	}
-
-	auto heuristic_firstObsidianRobotProducedAt(const Resources& r, const Blueprint& bp)
-	{
-		if (r.ObsidianRobots > 0) return 0;
-		if (r.Ore > bp.ObsidianRobotOreCost && r.Clay > bp.ObsidianRobotClayCost) return r.t + 1;
-
-		auto oreTimeLeft = r.Ore < bp.ObsidianRobotOreCost ? divRoundUp(bp.ObsidianRobotOreCost - r.Ore, std::max(1, r.OreRobots)) : 0;
-		auto clayTimeLeft = r.Clay < bp.ObsidianRobotClayCost ? divRoundUp(bp.ObsidianRobotClayCost - r.Clay, std::max(1, r.ClayRobots)) : 0;
-
-		return heuristic_firstClayRobotProducedAt(r, bp) + std::max(oreTimeLeft, clayTimeLeft);
-	}
-
-	auto heuristic_firstGeodeProducedAt(const Resources& r, const Blueprint& bp)
-	{
-		if (r.GeodeRobots > 0) return 0;
-		if (r.Ore > bp.GeodeRobotOreCost && r.Obsidian > bp.GeodeRobotObsidianCost) return r.t + 1;
-
-		auto oreTimeLeft = r.Ore < bp.GeodeRobotOreCost ? divRoundUp(bp.GeodeRobotOreCost - r.Ore, std::max(1, r.OreRobots)) : 0;
-		auto obsidianTimeLeft = r.Obsidian < bp.GeodeRobotObsidianCost ? divRoundUp(bp.GeodeRobotObsidianCost - r.Obsidian, std::max(1, r.ObsidianRobots)) : 0;
-
-		return heuristic_firstObsidianRobotProducedAt(r, bp) + std::max(oreTimeLeft, obsidianTimeLeft);
-	}
-
-	int maxGeodes(const Blueprint& blueprint)
+	int maxGeodes(const Blueprint& blueprint, unsigned time)
 	{
 		Resources initialState{};
 		initialState.t = 0;
 		initialState.OreRobots = 1;
 
-		int maxGeodes = 3;
+		int maxGeodes = 0;
+		Maxes maxes{
+			std::max(blueprint.OreRobotOreCost,
+				std::max(blueprint.ClayRobotOreCost, std::max(blueprint.ObsidianRobotOreCost, blueprint.GeodeRobotOreCost))),
+			blueprint.ObsidianRobotClayCost,
+			blueprint.GeodeRobotObsidianCost,
+		};
 
 		std::unordered_map<uint64_t, int> seen;
 
@@ -174,49 +131,40 @@ namespace {
 			auto state = std::move(q.front());
 			q.pop();
 
-			state.t++;
-
-			state.Ore += state.OreRobots;
-			state.Clay += state.ClayRobots;
-			state.Obsidian += state.ObsidianRobots;
-			state.Geodes += state.GeodeRobots;
-
 			if (state.Geodes > maxGeodes)
 			{
 				maxGeodes = state.Geodes;
-				std::cout << maxGeodes << std::endl;
 			}
 
-			if (state.t == TOTAL_MINUTES)
+			if (state.t == time)
 			{
 				continue;
 			}
 
-			if (heuristic_firstGeodeProducedAt(state, blueprint) > TOTAL_MINUTES)
-			{
-				continue; // prune not enough time left to exceed max
-			}
+			state.Ore = std::min(state.Ore, maxes.maxOreCost * timeLeft(state, time));
+			state.Clay = std::min(state.Clay, maxes.maxClayCost * timeLeft(state, time));
+			state.Obsidian = std::min(state.Obsidian, maxes.maxObsidianCost * timeLeft(state, time));
 
 			auto h = hash(state);
 			if (seen.contains(h))
 			{
-				if (seen.at(h) > state.Geodes)
-				{
-					continue;
-				}
-				else
-				{
-					seen.at(h) = state.Geodes;
-				}
+				continue;
 			}
 			else
 			{
 				seen.emplace(h, state.Geodes);
 			}
 
-			for (auto& ns : spendingCombinations(state, blueprint))
+			for (auto& ns : spendingCombinations(state, blueprint, maxes))
 			{
-				q.emplace(ns);
+				ns.t++;
+
+				ns.Ore += state.OreRobots;
+				ns.Clay += state.ClayRobots;
+				ns.Obsidian += state.ObsidianRobots;
+				ns.Geodes += state.GeodeRobots;
+
+				q.push(ns);
 			}
 		}
 
@@ -246,7 +194,26 @@ AOC_DAY(19)(const std::string& input)
 		blueprints.emplace_back(std::move(blueprint));
 	});
 
-	auto test = maxGeodes(blueprints[0]);
+	/*auto p1 = 0;
+	auto id = 1;
+	for (auto& bp : blueprints)
+	{
+		auto m = maxGeodes(bp, P1_MINUTES);
+		p1 += m * id++;
+		std::cout << (id - 1) << "/" << blueprints.size() << std::endl;
+	}
 
-	return { 0, 0 };
+	auto p2 = 1;
+	auto id1 = 1;
+	for (auto& bp : blueprints)
+	{
+		p2 *= maxGeodes(bp, P2_MINUTES);
+		std::cout << id1++ << "/" << blueprints.size() << std::endl;
+		if (id1 == 4)
+			break;
+	}
+
+	return { p1, p2 };*/
+
+	return { "runtime too high", "runtime too high" };
 }
