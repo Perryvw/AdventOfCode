@@ -26,3 +26,7 @@ template <typename TFunc> void ForEachLine(const std::string& s, const TFunc& ha
 }
 
 int parseInt(std::string_view s);
+
+int posmod(int v, int m);
+int64_t posmod(int64_t v, int64_t m);
+
