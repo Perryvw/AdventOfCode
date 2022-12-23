@@ -307,7 +307,7 @@ namespace
 	}
 }
 
-FOCUS_AOC_DAY(22)(const std::string& input)
+AOC_DAY(22)(const std::string& input)
 {
 	std::vector<Row> board;
 	std::vector<Instruction> instructions;

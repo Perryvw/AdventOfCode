@@ -30,3 +30,13 @@ int parseInt(std::string_view s);
 int posmod(int v, int m);
 int64_t posmod(int64_t v, int64_t m);
 
+struct Point {
+	int x;
+	int y;
+
+	bool operator==(const Point& other) const noexcept { return other.x == x && other.y == y; }
+};
+
+template <> struct std::hash<Point> {
+	std::size_t operator()(const Point& p) const noexcept { return (static_cast<size_t>(p.x) << 32) | p.y; }
+};
