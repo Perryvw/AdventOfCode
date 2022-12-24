@@ -92,6 +92,9 @@
     <ClCompile Include="day23.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="day24.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="aoc.h">
@@ -172,6 +175,9 @@
       <Filter>Input</Filter>
     </None>
     <None Include="day23.inp">
+      <Filter>Input</Filter>
+    </None>
+    <None Include="day24.inp">
       <Filter>Input</Filter>
     </None>
   </ItemGroup>

@@ -152,6 +152,7 @@
     <ClCompile Include="day21.cpp" />
     <ClCompile Include="day22.cpp" />
     <ClCompile Include="day23.cpp" />
+    <ClCompile Include="day24.cpp" />
     <ClCompile Include="day3.cpp" />
     <ClCompile Include="day4.cpp" />
     <ClCompile Include="day5.cpp" />
@@ -171,8 +172,6 @@
     <Text Include="day8.inp" />
     <Text Include="day13.inp" />
     <Text Include="day14.inp" />
-  </ItemGroup>
-  <ItemGroup>
     <None Include=".clang-format" />
     <None Include="day10.inp" />
     <None Include="day11.inp" />
@@ -187,6 +186,7 @@
     <None Include="day21.inp" />
     <None Include="day22.inp" />
     <None Include="day23.inp" />
+    <None Include="day24.inp" />
     <None Include="day3.inp" />
     <None Include="day4.inp" />
     <None Include="day5.inp" />
