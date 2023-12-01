@@ -1,0 +1,59 @@
+﻿namespace AoC2023;
+
+using System.Text.RegularExpressions;
+
+using TData = string[];
+using TResultP1 = int;
+using TResultP2 = int;
+public partial class Day1(ITestOutputHelper output) : AoCSolution<TResultP1, TResultP2, TData>(output)
+{
+    protected override TData LoadData() => LoadLinesFromFile("day1.txt");
+
+    protected override (TResultP1 p1, TResultP2 p2) Solve()
+    {
+        var ns1 = Data.Select(static l => 10 * FirstDigit(l) + LastDigit(l));
+
+        var ns2 = Data.Select(static l =>
+        {
+            var nl = RegexForwards().Replace(l, static match => match.Value switch
+            {
+                "one" => "1",
+                "two" => "2",
+                "three" => "3",
+                "four"  => "4",
+                "five"  => "5",
+                "six"  => "6",
+                "seven"  => "7",
+                "eight"  => "8",
+                "nine"  => "9",
+                "zero"  => "0",
+                _ => match.Value
+            }, 1);
+            nl = RegexBackwards().Replace(nl, static match => match.Value switch
+            {
+                "one" => "1",
+                "two" => "2",
+                "three" => "3",
+                "four" => "4",
+                "five" => "5",
+                "six" => "6",
+                "seven" => "7",
+                "eight" => "8",
+                "nine" => "9",
+                "zero" => "0",
+                _ => match.Value
+            }, 1);
+            return 10 * FirstDigit(nl) + LastDigit(nl);
+        });
+
+        return (ns1.Sum(), ns2.Sum());
+    }
+
+    private static int FirstDigit(string value) => value.First(char.IsNumber) - '0';
+    private static int LastDigit(string value) => value.Reverse().First(char.IsNumber) - '0';
+
+    [GeneratedRegex("one|two|three|four|five|six|seven|eight|nine|zero|\\d")]
+    private static partial Regex RegexForwards();
+    [GeneratedRegex("one|two|three|four|five|six|seven|eight|nine|zero|\\d", RegexOptions.RightToLeft)]
+    private static partial Regex RegexBackwards();
+}
