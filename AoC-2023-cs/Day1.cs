@@ -15,35 +15,12 @@ public partial class Day1(ITestOutputHelper output) : AoCSolution<TResultP1, TRe
 
         var ns2 = Data.Select(static l =>
         {
-            var nl = RegexForwards().Replace(l, static match => match.Value switch
-            {
-                "one" => "1",
-                "two" => "2",
-                "three" => "3",
-                "four"  => "4",
-                "five"  => "5",
-                "six"  => "6",
-                "seven"  => "7",
-                "eight"  => "8",
-                "nine"  => "9",
-                "zero"  => "0",
-                _ => match.Value
-            }, 1);
-            nl = RegexBackwards().Replace(nl, static match => match.Value switch
-            {
-                "one" => "1",
-                "two" => "2",
-                "three" => "3",
-                "four" => "4",
-                "five" => "5",
-                "six" => "6",
-                "seven" => "7",
-                "eight" => "8",
-                "nine" => "9",
-                "zero" => "0",
-                _ => match.Value
-            }, 1);
-            return 10 * FirstDigit(nl) + LastDigit(nl);
+            var first = RegexForwards().Match(l);
+            var last = RegexBackwards().Match(l);
+
+            var firstDigit = Parse(first.Value);
+            var lastDigit = Parse(last.Value);
+            return 10 * firstDigit + lastDigit;
         });
 
         return (ns1.Sum(), ns2.Sum());
@@ -51,6 +28,21 @@ public partial class Day1(ITestOutputHelper output) : AoCSolution<TResultP1, TRe
 
     private static int FirstDigit(string value) => value.First(char.IsNumber) - '0';
     private static int LastDigit(string value) => value.Reverse().First(char.IsNumber) - '0';
+
+    private static int Parse(string v) => v switch
+    {
+        "one" => 1,
+        "two" => 2,
+        "three" => 3,
+        "four" => 4,
+        "five" => 5,
+        "six" => 6,
+        "seven" => 7,
+        "eight" => 8,
+        "nine" => 9,
+        "zero" => 0,
+        _ => int.Parse(v)
+    };
 
     [GeneratedRegex("one|two|three|four|five|six|seven|eight|nine|zero|\\d")]
     private static partial Regex RegexForwards();
