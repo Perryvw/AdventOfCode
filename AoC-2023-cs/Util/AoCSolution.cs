@@ -26,19 +26,27 @@ public abstract class AoCSolution<TResultP1, TResultP2, TData>(ITestOutputHelper
 
 #if !DEBUG
         var stopwatch = new Stopwatch();
-        stopwatch.Start();
+
+        var times = new List<double>();
 
         for (var i = 0; i < Iterations; i++)
         {
+            stopwatch.Reset();
+            stopwatch.Start();
             Solve();
+            stopwatch.Stop();
+            times.Add(stopwatch.Elapsed.TotalMilliseconds);
         }
 
-        stopwatch.Stop();
-
-        var avgTime = stopwatch.Elapsed / Iterations;
+        var mean = times.Select(t => t / Iterations).Sum();
+        var min = times.Min();
+        var max = times.Max();
 
         LogOutput("");
-        LogOutput($"Average time: {avgTime.TotalMilliseconds}ms ({Iterations} iterations)");
+        LogOutput($"Benchmark ({Iterations} iterations)");
+        LogOutput($"|{"Mean (ms)",11} |{"Min (ms)",11} |{"Max (ms)",11} |");
+        LogOutput($"|------------|------------|------------|");
+        LogOutput($"|{mean,11:F3} |{min,11:F3} |{max,11:F3} |");
 #endif
     }
 

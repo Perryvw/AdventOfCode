@@ -26,8 +26,8 @@ public partial class Day1(ITestOutputHelper output) : AoCSolution<TResultP1, TRe
         return (ns1.Sum(), ns2.Sum());
     }
 
-    private static int FirstDigit(string value) => value.First(char.IsNumber) - '0';
-    private static int LastDigit(string value) => value.Reverse().First(char.IsNumber) - '0';
+    private static int FirstDigit(string value) => value.First(char.IsAsciiDigit) - '0';
+    private static int LastDigit(string value) => value.Last(char.IsAsciiDigit) - '0';
 
     private static int Parse(string v) => v switch
     {
