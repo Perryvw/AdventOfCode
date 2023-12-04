@@ -41,20 +41,8 @@ public partial class Day4(ITestOutputHelper output) : AoCSolution<int, int, TDat
     private int NumCardsWon(Card card, List<Card> cards, Dictionary<int, int> cache)
     {
         var overlappingNums = card.YourNumbers.Where(n => card.WinningNumbers.Contains(n)).Count();
-        var result = 1;
-        foreach (var nextCard in Enumerable.Range(card.N, overlappingNums))
-        {
-            if (cache.TryGetValue(nextCard, out var cachedValue))
-            {
-                result += cachedValue;
-            }
-            else
-            {
-                var val = NumCardsWon(cards[nextCard], cards, cache);
-                result += val;
-                cache.Add(nextCard, val);
-            }
-        }
-        return result;
+        return 1 + Enumerable.Range(card.N, overlappingNums)
+            .Select(nextCard => cache.GetOrAdd(nextCard, _ => NumCardsWon(cards[nextCard], cards, cache)))
+            .Sum();
     }
 }
