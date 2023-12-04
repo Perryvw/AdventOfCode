@@ -2,14 +2,11 @@
 
 using System.Text.RegularExpressions;
 
-using TData = string[];
-using TResultP1 = int;
-using TResultP2 = int;
-public partial class Day1(ITestOutputHelper output) : AoCSolution<TResultP1, TResultP2, TData>(output)
+public partial class Day1(ITestOutputHelper output) : AoCSolution<int, int, string[]>(output)
 {
-    protected override TData LoadData() => LoadLinesFromFile("day1.txt");
+    protected override string[] LoadData() => LoadLinesFromFile("day1.txt");
 
-    protected override (TResultP1 p1, TResultP2 p2) Solve()
+    protected override (int p1, int p2) Solve()
     {
         var ns1 = Data.Select(static l => 10 * FirstDigit(l) + LastDigit(l));
 
