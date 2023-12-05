@@ -13,7 +13,7 @@ public abstract class AoCSolution<TResultP1, TResultP2, TData>(ITestOutputHelper
     protected TData Data { get; private set; } = default!;
 
     [Fact]
-    public void Run()
+    public void Answer()
     {
         Data = LoadData();
 
