@@ -1,36 +1,36 @@
 ﻿namespace AoC2023;
 
-public record struct Input
+public partial class Day5(ITestOutputHelper output) : AoCSolution<long, long, Day5.Input>(output)
 {
-    public long[] Seeds;
-    public Map[] Maps;
-}
+    public record struct Input
+    {
+        public long[] Seeds;
+        public Mapping[] Maps;
+    }
 
-public record struct Map
-{
-    public string From;
-    public string To;
-    public RangeMapping[] Ranges;
-}
+    public record struct Mapping
+    {
+        public string From;
+        public string To;
+        public RangeMapping[] Ranges;
+    }
 
-public record struct RangeMapping
-{
-    public Range SourceRange;
-    public Range DestinationRange;
-}
+    public record struct RangeMapping
+    {
+        public Range SourceRange;
+        public Range DestinationRange;
+    }
 
-public record struct Range
-{
-    public long Start;
-    public long Length;
+    public record struct Range
+    {
+        public long Start;
+        public long Length;
 
-    public readonly long End => Start + Length - 1;
+        public readonly long End => Start + Length - 1;
 
-    public override string ToString() => $"[{Start}-{End}]";
-}
+        public override string ToString() => $"[{Start}-{End}]";
+    }
 
-public partial class Day5(ITestOutputHelper output) : AoCSolution<long, long, Input>(output)
-{
     protected override Input LoadData()
     {
         var lines = LoadStringFromFile("day5.txt");
@@ -50,7 +50,7 @@ public partial class Day5(ITestOutputHelper output) : AoCSolution<long, long, In
                         SourceRange = new Range { Start = nums[1], Length = nums[2] },
                     };
                 }).ToArray();
-                return new Map
+                return new Mapping
                 {
                     From = fromto[0],
                     To = fromto[1],
