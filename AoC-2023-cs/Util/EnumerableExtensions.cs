@@ -13,4 +13,31 @@ internal static class EnumerableExtensions
 
     internal static T LeastCommonMultiple<T>(this IEnumerable<T> items) where T : INumber<T>
         => items.Aggregate(items.First(), (current, item) => MathUtils.Lcm(current, item));
+
+    internal static IEnumerable<IEnumerable<T>> Rows<T>(this IEnumerable<IEnumerable<T>> items)
+        => items;
+
+    internal static IEnumerable<IEnumerable<T>> Columns<T>(this IEnumerable<IEnumerable<T>> items)
+    {
+        var width = items.First().Count();
+        var height = items.Count();
+        return Enumerable.Range(0, width)
+            .Select(x => Enumerable.Range(0, height)
+            .Select(y => items.ElementAt(y).ElementAt(x)));
+    }
+
+    internal static IEnumerable<(int Index, T Value)> Enumerate<T>(this IEnumerable<T> items)
+        => items.Select((item, i) => (i, item));
+
+    internal static IEnumerable<(T, T)> DifferentCombinations<T>(this IEnumerable<T> items)
+    {
+        var list = items.ToList();
+        for (var i = 0; i < list.Count; i++)
+        {
+            for (var j = i + 1; j < list.Count; j++)
+            {
+                yield return (list[i], list[j]);
+            }
+        }
+    }
 }

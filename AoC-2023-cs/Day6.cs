@@ -26,12 +26,12 @@ public partial class Day6(ITestOutputHelper output) : AoCSolution<int, int, List
             })
             .Product();
 
-        var p2Time = Data.Aggregate(0l, (current, next) =>
+        var p2Time = Data.Aggregate(0L, (current, next) =>
         {
             var nextSize = Math.Floor(Math.Log10(next.Time)) + 1;
             return (long)Math.Pow(10, nextSize) * current + next.Time;
         });
-        var p2Distance = Data.Aggregate(0l, (current, next) =>
+        var p2Distance = Data.Aggregate(0L, (current, next) =>
         {
             var nextSize = Math.Floor(Math.Log10(next.RecordDistance)) + 1;
             return (long)Math.Pow(10, nextSize) * current + next.RecordDistance;
