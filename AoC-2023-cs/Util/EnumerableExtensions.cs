@@ -40,4 +40,28 @@ internal static class EnumerableExtensions
             }
         }
     }
+
+    internal static IEnumerable<T> Repeat<T>(this IEnumerable<T> items, int count) => items.Repeat(count, Enumerable.Empty<T>());
+
+    internal static IEnumerable<T> Repeat<T>(this IEnumerable<T> items, int count, IEnumerable<T> fill)
+    {
+        if (count == 0) yield break;
+
+        var list = items.ToList();
+        var fillList = fill.ToList();
+        for (var i = 0; i < count; i++)
+        {
+            foreach (var item in list)
+            {
+                yield return item;
+            }
+            if (i < count - 1)
+            {
+                foreach (var item in fillList)
+                {
+                    yield return item;
+                }
+            }
+        }
+    }
 }
