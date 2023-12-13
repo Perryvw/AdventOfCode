@@ -4,6 +4,8 @@ namespace AoC2023;
 
 public partial class Day12(ITestOutputHelper output) : AoCSolution<long, long, List<(string Springs, int[] Groups)>>(output)
 {
+    protected override int Iterations => 10;
+
     protected override List<(string Springs, int[] Groups)> LoadData()
         => LoadLinesFromFile("day12.txt")
             .Select(l =>
@@ -15,6 +17,8 @@ public partial class Day12(ITestOutputHelper output) : AoCSolution<long, long, L
 
     protected override (long p1, long p2) Solve()
     {
+        Cache = new ConcurrentDictionary<(string, string, int), long>();
+
         var p1 = Data
             .Select(l => NumPossibilities(l.Springs, l.Groups, 0))
             .Sum();
@@ -29,7 +33,7 @@ public partial class Day12(ITestOutputHelper output) : AoCSolution<long, long, L
         return (p1, p2);
     }
 
-    private ConcurrentDictionary<(string, string, int), long> Cache = new ConcurrentDictionary<(string, string, int), long>();
+    private ConcurrentDictionary<(string, string, int), long> Cache;
 
     private long NumPossibilities(ReadOnlySpan<char> str, ReadOnlySpan<int> groups, int depthInCurrentGroup)
     {
