@@ -69,6 +69,15 @@ public abstract class AoCSolution<TResultP1, TResultP2, TData>(ITestOutputHelper
         return filestring.Split(splitChar);
     }
 
+    protected string[][] LoadLineBlocksFromFile(string filePath)
+    {
+        var filestring = LoadStringFromFile(filePath);
+        var splitChar = filestring.Contains("\r\n") ? "\r\n" : "\n";
+        return filestring.Split($"{splitChar}{splitChar}")
+            .Select(block => block.Split(splitChar).ToArray())
+            .ToArray();
+    }
+
     protected void LogOutput(object message)
     {
         _output.WriteLine(message.ToString());
