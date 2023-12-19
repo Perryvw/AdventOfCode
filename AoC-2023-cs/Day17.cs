@@ -73,6 +73,7 @@ public partial class Day17(ITestOutputHelper output) : AoCSolution<int, int, int
                     Direction.Down => (0, 1),
                     Direction.Left => (-1, 0),
                     Direction.Right => (1, 0),
+                    _ => throw new Exception("Not possible")
                 };
 
                 var cost = 0;

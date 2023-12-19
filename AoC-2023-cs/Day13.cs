@@ -13,15 +13,15 @@ public partial class Day13(ITestOutputHelper output) : AoCSolution<int, int, str
 
                 var reflectionRow = Enumerable.Range(0, height - 1)
                     .Cast<Nullable<int>>()
-                    .Where(i => ReflectionErrorHorizontal(block, i.Value) == 0)
+                    .Where(i => ReflectionErrorHorizontal(block, i!.Value) == 0)
                     .FirstOrDefault();
 
                 var reflectionColumn = Enumerable.Range(0, width - 1)
                     .Cast<Nullable<int>>()
-                    .Where(i => ReflectionErrorVertical(block, i.Value) == 0)
+                    .Where(i => ReflectionErrorVertical(block, i!.Value) == 0)
                     .FirstOrDefault();
 
-                return reflectionRow.HasValue ? 100 * (reflectionRow.Value + 1) : reflectionColumn.Value + 1;
+                return reflectionRow.HasValue ? 100 * (reflectionRow.Value + 1) : reflectionColumn!.Value + 1;
             })
             .Sum();
 
@@ -32,15 +32,15 @@ public partial class Day13(ITestOutputHelper output) : AoCSolution<int, int, str
 
                 var reflectionRow = Enumerable.Range(0, height - 1)
                     .Cast<Nullable<int>>()
-                    .Where(i => ReflectionErrorHorizontal(block, i.Value) == 1)
+                    .Where(i => ReflectionErrorHorizontal(block, i!.Value) == 1)
                     .FirstOrDefault();
 
                 var reflectionColumn = Enumerable.Range(0, width - 1)
                     .Cast<Nullable<int>>()
-                    .Where(i => ReflectionErrorVertical(block, i.Value) == 1)
+                    .Where(i => ReflectionErrorVertical(block, i!.Value) == 1)
                     .FirstOrDefault();
 
-                return reflectionRow.HasValue ? 100 * (reflectionRow.Value + 1) : reflectionColumn.Value + 1;
+                return reflectionRow.HasValue ? 100 * (reflectionRow.Value + 1) : reflectionColumn!.Value + 1;
             })
             .Sum();
 

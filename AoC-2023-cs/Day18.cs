@@ -26,6 +26,7 @@ public partial class Day18(ITestOutputHelper output) : AoCSolution<int, long, Li
                 'D' => (0, 1),
                 'R' => (1, 0),
                 'L' => (-1, 0),
+                _ => throw new Exception("Not possible")
             };
 
             var newPos = (X: pos.X + dx * distance, Y: pos.Y + dy * distance);
@@ -40,6 +41,7 @@ public partial class Day18(ITestOutputHelper output) : AoCSolution<int, long, Li
                 '1' => (0, 1),
                 '0' => (1, 0),
                 '2' => (-1, 0),
+                _ => throw new Exception("Not possible")
             };
             var newPos2 = (X: pos2.X + dx2 * distance2, Y: pos2.Y + dy2 * distance2);
             p2 += distance2 + (pos2.X * newPos2.Y) - (pos2.Y * newPos2.X);
