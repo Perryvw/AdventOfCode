@@ -2,6 +2,8 @@
 
 public partial class Day22(ITestOutputHelper output) : AoCSolution<int, long, List<Day22.Brick>>(output)
 {
+    protected override int Iterations => 100;
+
     public record struct Coord3D(int X, int Y, int Z) { }
 
     public record Brick(Coord3D Min, Coord3D Max)
