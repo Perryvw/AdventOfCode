@@ -19,4 +19,10 @@ internal static class MathUtils
     {
         return (a / Gcd(a, b)) * b;
     }
+
+    public static T PosMod<T>(T v, T modulo) where T : INumber<T>
+    {
+        var r = v % modulo;
+        return r >= T.Zero ? r : r + modulo;
+    }
 }
