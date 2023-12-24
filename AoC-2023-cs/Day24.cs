@@ -76,39 +76,31 @@ public partial class Day24(ITestOutputHelper output) : AoCSolution<long, long, L
     {
         using var z3ctx = new Z3.Context();
 
-        var x = z3ctx.MkIntConst(z3ctx.MkSymbol("x"));
-        var y = z3ctx.MkIntConst(z3ctx.MkSymbol("y"));
-        var z = z3ctx.MkIntConst(z3ctx.MkSymbol("z"));
+        var x = z3ctx.MkIntConst("x");
+        var y = z3ctx.MkIntConst("y");
+        var z = z3ctx.MkIntConst("z");
 
-        var vx = z3ctx.MkIntConst(z3ctx.MkSymbol("vx"));
-        var vy = z3ctx.MkIntConst(z3ctx.MkSymbol("vy"));
-        var vz = z3ctx.MkIntConst(z3ctx.MkSymbol("vz"));
+        var vx = z3ctx.MkIntConst("vx");
+        var vy = z3ctx.MkIntConst("vy");
+        var vz = z3ctx.MkIntConst("vz");
 
         var solver = z3ctx.MkSolver();
 
         foreach (var (i, hail) in Data.Enumerate())
         {
-            var xi = z3ctx.MkIntConst(z3ctx.MkSymbol($"x{i}"));
-            var yi = z3ctx.MkIntConst(z3ctx.MkSymbol($"y{i}"));
-            var zi = z3ctx.MkIntConst(z3ctx.MkSymbol($"z{i}"));
-            var ti = z3ctx.MkIntConst(z3ctx.MkSymbol($"t{i}"));
+            var ti = z3ctx.MkIntConst($"t{i}");
 
-            solver.Assert(z3ctx.MkEq(xi, (ti * z3ctx.MkInt(hail.Velocity.X)) + z3ctx.MkInt(hail.Position.X)));
-            solver.Assert(z3ctx.MkEq(yi, (ti * z3ctx.MkInt(hail.Velocity.Y)) + z3ctx.MkInt(hail.Position.Y)));
-            solver.Assert(z3ctx.MkEq(zi, (ti * z3ctx.MkInt(hail.Velocity.Z)) + z3ctx.MkInt(hail.Position.Z)));
+            var xiExpr = (ti * z3ctx.MkInt(hail.Velocity.X)) + z3ctx.MkInt(hail.Position.X);
+            var yiExpr = (ti * z3ctx.MkInt(hail.Velocity.Y)) + z3ctx.MkInt(hail.Position.Y);
+            var ziExpr = (ti * z3ctx.MkInt(hail.Velocity.Z)) + z3ctx.MkInt(hail.Position.Z);
 
-            solver.Assert(z3ctx.MkEq(xi, (ti * vx) + x));
-            solver.Assert(z3ctx.MkEq(yi, (ti * vy) + y));
-            solver.Assert(z3ctx.MkEq(zi, (ti * vz) + z));
+            solver.Assert(z3ctx.MkEq(xiExpr, (ti * vx) + x));
+            solver.Assert(z3ctx.MkEq(yiExpr, (ti * vy) + y));
+            solver.Assert(z3ctx.MkEq(ziExpr, (ti * vz) + z));
         }
 
         var sat = solver.Check();
-
-        var xval = (solver.Model.Evaluate(x) as Z3.IntNum)!.BigInteger;
-        var yval = (solver.Model.Evaluate(y) as Z3.IntNum)!.BigInteger;
-        var zval = (solver.Model.Evaluate(z) as Z3.IntNum)!.BigInteger;
-
-        return (long)xval + (long)yval + (long)zval;
+        return (solver.Model.Evaluate(x + y + z) as Z3.IntNum)!.Int64;
     }
 
     [Fact]
