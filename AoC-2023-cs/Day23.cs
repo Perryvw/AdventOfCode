@@ -137,7 +137,7 @@ public partial class Day23(ITestOutputHelper output) : AoCSolution<long, long, s
             return nexts.Any() ? nexts.Max() : null;
         }
 
-        var p2 = LongestPathFrom3(new Coord(1, 0), new()).Value;
+        var p2 = LongestPathFrom3(new Coord(1, 0), new())!.Value;
 
         return (p1, p2);
     }
