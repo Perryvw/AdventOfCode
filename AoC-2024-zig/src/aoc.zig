@@ -34,13 +34,13 @@ const answers = [_]Solution{
 pub fn main() !void {
     for (answers, 1..) |s, day| {
         const result = try runSolution(s);
-        std.log.info("Day {}: p1: {s}, p2: {s}, min: {s}, max: {s}, mean: {s} ({} iterations)", .{
+        std.debug.print("Day {}: p1: {s}, p2: {s}, min: {d}, max: {d}, mean: {d} ({} iterations)\n", .{
             day,
             try printAnswer(result.answers.p1),
             try printAnswer(result.answers.p2),
-            try formatDurationMs(result.min_time),
-            try formatDurationMs(result.max_time),
-            try formatDurationMs(result.avg_time),
+            @as(f64, @floatFromInt(result.min_time)) / 1000.0,
+            @as(f64, @floatFromInt(result.max_time)) / 1000.0,
+            @as(f64, @floatFromInt(result.avg_time)) / 1000.0,
             ITERATIONS,
         });
     }

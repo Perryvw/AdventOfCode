@@ -13,13 +13,13 @@ pub fn build(b: *std.Build) void {
     // Standard optimization options allow the person running `zig build` to select
     // between Debug, ReleaseSafe, ReleaseFast, and ReleaseSmall. Here we do not
     // set a preferred release mode, allowing the user to decide how to optimize.
-    const optimize = b.standardOptimizeOption(.{ .preferred_optimize_mode = std.builtin.OptimizeMode.ReleaseFast });
+    //const optimize = b.standardOptimizeOption(.{ .preferred_optimize_mode = std.builtin.OptimizeMode.ReleaseFast });
 
     const exe = b.addExecutable(.{
         .name = "aoc2024zig",
         .root_source_file = b.path("src/aoc.zig"),
         .target = target,
-        .optimize = optimize,
+        .optimize = std.builtin.OptimizeMode.ReleaseFast,
     });
 
     // This declares intent for the executable to be installed into the
