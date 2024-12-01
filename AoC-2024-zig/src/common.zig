@@ -35,3 +35,21 @@ pub fn avg(t: type, data: []const t) t {
     }
     return result;
 }
+
+pub fn min(t: type, data: []const t) t {
+    var result: t = data[0];
+
+    for (data) |d| {
+        result = @min(result, d);
+    }
+    return result;
+}
+
+pub fn max(t: type, data: []const t) t {
+    var result: t = data[0];
+
+    for (data) |d| {
+        result = @max(result, d);
+    }
+    return result;
+}

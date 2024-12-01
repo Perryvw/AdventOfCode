@@ -7,12 +7,15 @@ pub const solution = aoc.Solution{ .WithData = .{
     .solve = &solve,
 } };
 
-fn solve(data: []const u8) !aoc.Answer {
+fn solve(data: []const u8) !aoc.Answers {
     var result: u64 = 0;
     var iter = common.LinesIterator{ .string = data };
     while (iter.next()) |_| {
         //std.log.info("{s}", .{line});
         result += 1;
     }
-    return .{ .i = result };
+    return .{
+        .p1 = .{ .i = result },
+        .p2 = .{ .i = 0 },
+    };
 }
