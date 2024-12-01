@@ -18,8 +18,8 @@ fn solve(data: []const u8) !aoc.Answers {
     var i: u32 = 0;
     var iter = common.LinesIterator{ .string = data };
     while (iter.next()) |line| {
-        const left = try std.fmt.parseInt(i32, line[0..INT_WIDTH], 10);
-        const right = try std.fmt.parseInt(i32, line[(INT_WIDTH + 3)..(INT_WIDTH * 2 + 3)], 10);
+        const left = common.parseInt(i32, line[0..INT_WIDTH]);
+        const right = common.parseInt(i32, line[(INT_WIDTH + 3)..(INT_WIDTH * 2 + 3)]);
 
         list1[i] = left;
         list2[i] = right;

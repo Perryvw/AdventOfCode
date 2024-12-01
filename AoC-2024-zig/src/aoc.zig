@@ -105,20 +105,17 @@ fn runSolution(solution: Solution) !RunResult {
 
 fn benchmark(action: Solution, data: ?[]const u8, iteratations: comptime_int) ![]i64 {
     var result: [iteratations]i64 = undefined;
+    var timer = try std.time.Timer.start();
 
     for (0..iteratations) |i| {
-        var start: i64 = 0;
-        var end: i64 = 0;
-        while (start == end) { // sometimes it just decides the thing took 0 us? not sure how or why
-            start = std.time.microTimestamp();
-            if (data) |d| {
-                std.mem.doNotOptimizeAway(try action.WithData.solve(d));
-            } else {
-                std.mem.doNotOptimizeAway(try action.Func());
-            }
-            end = std.time.microTimestamp();
+        const start = timer.read();
+        if (data) |d| {
+            std.mem.doNotOptimizeAway(try action.WithData.solve(d));
+        } else {
+            std.mem.doNotOptimizeAway(try action.Func());
         }
-        result[i] = end - start;
+        const end = timer.lap();
+        result[i] = @intCast(@divTrunc(end - start, 1000));
     }
 
     return &result;

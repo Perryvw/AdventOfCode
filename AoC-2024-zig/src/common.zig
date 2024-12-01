@@ -27,13 +27,13 @@ pub const LinesIterator = struct {
 };
 
 pub fn avg(t: type, data: []const t) t {
-    const num: t = @intCast(data.len);
-    var result: t = 0;
+    const num = data.len;
+    var result: i128 = 0;
 
     for (data) |d| {
-        result += @divTrunc(d, num);
+        result += d;
     }
-    return result;
+    return @intCast(@divTrunc(result, num));
 }
 
 pub fn min(t: type, data: []const t) t {
@@ -50,6 +50,14 @@ pub fn max(t: type, data: []const t) t {
 
     for (data) |d| {
         result = @max(result, d);
+    }
+    return result;
+}
+
+pub fn parseInt(t: type, data: []const u8) t {
+    var result: t = 0;
+    for (data) |c| {
+        result = 10 * result + (c - '0');
     }
     return result;
 }
