@@ -28,7 +28,7 @@ const ITERATIONS = 1000;
 // Add new days to run here
 const answers = [_]Solution{
     @import("day1.zig").solution,
-    //@import("day2.zig").solution,
+    @import("day2.zig").solution,
 };
 
 pub fn main() !void {
