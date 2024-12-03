@@ -29,6 +29,7 @@ const ITERATIONS = 1000;
 const answers = [_]Solution{
     @import("day1.zig").solution,
     @import("day2.zig").solution,
+    @import("day3.zig").solution,
 };
 
 pub fn main() !void {

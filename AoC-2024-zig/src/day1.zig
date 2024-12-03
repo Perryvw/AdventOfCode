@@ -37,6 +37,7 @@ fn solve(data: []const u8) !aoc.Answers {
     }
 
     var map = std.AutoHashMap(i32, i32).init(std.heap.page_allocator);
+    defer map.deinit();
     for (0..i) |n| {
         const v = rightList[n];
         const oldValue = try map.getOrPutValue(v, 0);
