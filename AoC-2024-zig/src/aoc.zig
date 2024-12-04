@@ -109,15 +109,23 @@ fn benchmark(action: Solution, data: ?[]const u8, iteratations: comptime_int) ![
     var result: [iteratations]i64 = undefined;
     var timer = try std.time.Timer.start();
 
-    for (0..iteratations) |i| {
-        const start = timer.read();
-        if (data) |d| {
-            std.mem.doNotOptimizeAway(try action.WithData.solve(d));
-        } else {
-            std.mem.doNotOptimizeAway(try action.Func());
+    if (data) |d| {
+        const copied = try std.heap.page_allocator.alloc(u8, d.len);
+        @memcpy(copied, d);
+
+        for (0..iteratations) |i| {
+            const start = timer.read();
+            std.mem.doNotOptimizeAway(try action.WithData.solve(copied));
+            const end = timer.lap();
+            result[i] = @intCast(@divTrunc(end - start, 1000));
         }
-        const end = timer.lap();
-        result[i] = @intCast(@divTrunc(end - start, 1000));
+    } else {
+        for (0..iteratations) |i| {
+            const start = timer.read();
+            std.mem.doNotOptimizeAway(try action.Func());
+            const end = timer.lap();
+            result[i] = @intCast(@divTrunc(end - start, 1000));
+        }
     }
 
     return &result;

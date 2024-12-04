@@ -18,7 +18,7 @@ const Grid = struct {
         return self.data[self.pos(x, y)] == c;
     }
 
-    inline fn pos(self: *const Grid, x: i32, y: i32) usize {
+    fn pos(self: *const Grid, x: i32, y: i32) usize {
         std.debug.assert(x >= 0);
         std.debug.assert(x < self.width);
         std.debug.assert(y >= 0);
