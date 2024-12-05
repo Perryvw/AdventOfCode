@@ -35,8 +35,12 @@ const answers = [_]Solution{
 };
 
 pub fn main() !void {
+    var gpa = std.heap.GeneralPurposeAllocator(.{}){};
+    const allocator = gpa.allocator();
+    defer std.debug.assert(gpa.deinit() != .leak);
+
     for (answers, 1..) |s, day| {
-        const result = try runSolution(s);
+        const result = try runSolution(s, allocator);
         std.debug.print("Day {}: p1: {s}, p2: {s}, min: {d}, max: {d}, mean: {d} ({} iterations)\n", .{
             day,
             try printAnswer(result.answers.p1),
@@ -67,28 +71,20 @@ inline fn printAnswer(a: Answer) ![]const u8 {
     };
 }
 
-fn readFile(filename: []const u8) ![]const u8 {
+fn readFile(filename: []const u8, allocator: std.mem.Allocator) ![]const u8 {
     const file = try std.fs.cwd().openFile(filename, .{});
     defer file.close();
 
-    var buf_reader = std.io.bufferedReader(file.reader());
-    const in_stream = buf_reader.reader();
-
-    var buf: [300 * 1024]u8 = undefined;
-
-    const size = try in_stream.readAll(&buf);
-    const str = buf[0..size];
-
-    return str;
+    return try file.readToEndAlloc(allocator, 1024 * 1024);
 }
 
-fn runSolution(solution: Solution) !RunResult {
+fn runSolution(solution: Solution, allocator: std.mem.Allocator) !RunResult {
     var data: ?[]const u8 = null;
 
     const result = switch (solution) {
         .Func => |f| try f(),
         .WithData => |dataSolver| blk: {
-            data = try readFile(dataSolver.data);
+            data = try readFile(dataSolver.data, allocator);
             break :blk try dataSolver.solve(data.?);
         },
     };
@@ -97,6 +93,10 @@ fn runSolution(solution: Solution) !RunResult {
     const min_time = common.min(i64, runDurations);
     const avg_time = common.avg(i64, runDurations);
     const max_time = common.max(i64, runDurations);
+
+    if (data) |d| {
+        allocator.free(d);
+    }
 
     return .{
         .answers = result,
@@ -111,12 +111,9 @@ fn benchmark(action: Solution, data: ?[]const u8, iteratations: comptime_int) ![
     var timer = try std.time.Timer.start();
 
     if (data) |d| {
-        const copied = try std.heap.page_allocator.alloc(u8, d.len);
-        @memcpy(copied, d);
-
         for (0..iteratations) |i| {
             const start = timer.read();
-            std.mem.doNotOptimizeAway(try action.WithData.solve(copied));
+            std.mem.doNotOptimizeAway(try action.WithData.solve(d));
             const end = timer.lap();
             result[i] = @intCast(@divTrunc(end - start, 1000));
         }
