@@ -31,6 +31,7 @@ const answers = [_]Solution{
     @import("day2.zig").solution,
     @import("day3.zig").solution,
     @import("day4.zig").solution,
+    @import("day5.zig").solution,
 };
 
 pub fn main() !void {
