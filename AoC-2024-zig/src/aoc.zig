@@ -15,15 +15,19 @@ const RunResult = struct {
     max_time: i64,
 };
 
+const DEFAULT_ITERATIONS = 1000;
+
 pub const Solution = union(enum) {
-    Func: Solver,
+    Func: struct {
+        solve: Solver,
+        benchmarkIterations: u32 = DEFAULT_ITERATIONS,
+    },
     WithData: struct {
         data: []const u8,
         solve: SolverWithData,
+        benchmarkIterations: u32 = DEFAULT_ITERATIONS,
     },
 };
-
-const ITERATIONS = 1;
 
 // Add new days to run here
 const answers = [_]Solution{
@@ -49,9 +53,16 @@ pub fn main() !void {
             @as(f64, @floatFromInt(result.min_time)) / 1000.0,
             @as(f64, @floatFromInt(result.max_time)) / 1000.0,
             @as(f64, @floatFromInt(result.avg_time)) / 1000.0,
-            ITERATIONS,
+            benchmarkIterations(s),
         });
     }
+}
+
+fn benchmarkIterations(s: Solution) u32 {
+    return switch (s) {
+        .Func => |t| t.benchmarkIterations,
+        .WithData => |t| t.benchmarkIterations,
+    };
 }
 
 inline fn formatDurationMs(micros: i64) ![]const u8 {
@@ -83,17 +94,19 @@ fn runSolution(solution: Solution, allocator: std.mem.Allocator) !RunResult {
     var data: ?[]const u8 = null;
 
     const result = switch (solution) {
-        .Func => |f| try f(),
+        .Func => |f| try f.solve(),
         .WithData => |dataSolver| blk: {
             data = try readFile(dataSolver.data, allocator);
             break :blk try dataSolver.solve(data.?);
         },
     };
 
-    const runDurations = try benchmark(solution, data, ITERATIONS);
-    const min_time = common.min(i64, runDurations);
-    const avg_time = common.avg(i64, runDurations);
-    const max_time = common.max(i64, runDurations);
+    const runDurations = try benchmark(solution, data, benchmarkIterations(solution), allocator);
+    const min_time = common.min(i64, runDurations.items);
+    const avg_time = common.avg(i64, runDurations.items);
+    const max_time = common.max(i64, runDurations.items);
+
+    runDurations.deinit();
 
     if (data) |d| {
         allocator.free(d);
@@ -107,25 +120,26 @@ fn runSolution(solution: Solution, allocator: std.mem.Allocator) !RunResult {
     };
 }
 
-fn benchmark(action: Solution, data: ?[]const u8, iteratations: comptime_int) ![]i64 {
-    var result: [iteratations]i64 = undefined;
+fn benchmark(action: Solution, data: ?[]const u8, iterations: u32, allocator: std.mem.Allocator) !std.ArrayList(i64) {
+    var result = std.ArrayList(i64).init(allocator);
+
     var timer = try std.time.Timer.start();
 
     if (data) |d| {
-        for (0..iteratations) |i| {
+        for (0..iterations) |_| {
             const start = timer.read();
             std.mem.doNotOptimizeAway(try action.WithData.solve(d));
             const end = timer.lap();
-            result[i] = @intCast(@divTrunc(end - start, 1000));
+            try result.append(@intCast(@divTrunc(end - start, 1000)));
         }
     } else {
-        for (0..iteratations) |i| {
+        for (0..iterations) |_| {
             const start = timer.read();
-            std.mem.doNotOptimizeAway(try action.Func());
+            std.mem.doNotOptimizeAway(try action.Func.solve());
             const end = timer.lap();
-            result[i] = @intCast(@divTrunc(end - start, 1000));
+            try result.append(@intCast(@divTrunc(end - start, 1000)));
         }
     }
 
-    return &result;
+    return result;
 }
