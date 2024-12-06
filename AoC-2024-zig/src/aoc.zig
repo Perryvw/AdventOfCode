@@ -23,7 +23,7 @@ pub const Solution = union(enum) {
     },
 };
 
-const ITERATIONS = 1000;
+const ITERATIONS = 1;
 
 // Add new days to run here
 const answers = [_]Solution{
@@ -32,6 +32,7 @@ const answers = [_]Solution{
     @import("day3.zig").solution,
     @import("day4.zig").solution,
     @import("day5.zig").solution,
+    @import("day6.zig").solution,
 };
 
 pub fn main() !void {
