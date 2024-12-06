@@ -10,36 +10,6 @@ pub const solution = aoc.Solution{ .WithData = .{
 
 const Direction = enum { Up, Right, Down, Left };
 
-const Grid = struct {
-    data: []u8,
-    width: usize,
-    height: usize,
-
-    fn isInsideGrid(self: *const Grid, x: i32, y: i32) bool {
-        return x >= 0 and x < self.width and y >= 0 and y < self.height;
-    }
-
-    fn isCharAtPosition(self: *const Grid, x: i32, y: i32, c: u8) bool {
-        if (!self.isInsideGrid(x, y)) return false;
-        return self.data[self.pos(x, y)] == c;
-    }
-
-    fn charAtPos(self: *const Grid, x: i32, y: i32) ?u8 {
-        if (!self.isInsideGrid(x, y)) return null;
-
-        return self.data[self.pos(x, y)];
-    }
-
-    fn pos(self: *const Grid, x: i32, y: i32) usize {
-        std.debug.assert(x >= 0);
-        std.debug.assert(x < self.width);
-        std.debug.assert(y >= 0);
-        std.debug.assert(y < self.height);
-        // +1 to account for newlines
-        return @intCast(@as(i32, @intCast(self.width + 1)) * y + x);
-    }
-};
-
 fn solve(data: []const u8) !aoc.Answers {
     var p1: i32 = 0;
     var p2: i32 = 0;
@@ -51,11 +21,7 @@ fn solve(data: []const u8) !aoc.Answers {
     const width = std.mem.indexOf(u8, data, "\n").?;
     const height = @divTrunc(data.len, width);
 
-    const gridData = try allocator.alloc(u8, data.len);
-    defer allocator.free(gridData);
-    @memcpy(gridData, data);
-
-    const grid: Grid = .{ .data = gridData, .width = width, .height = height };
+    const grid: common.Grid = .{ .data = data, .width = width, .height = height };
 
     const guardPos = std.mem.indexOf(u8, data, "^").?;
 
@@ -123,7 +89,7 @@ fn solve(data: []const u8) !aoc.Answers {
 }
 
 fn stepsUntilOutside(
-    grid: *const Grid,
+    grid: *const common.Grid,
     startX: i32,
     startY: i32,
     startDir: Direction,

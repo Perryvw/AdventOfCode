@@ -1,3 +1,5 @@
+const std = @import("std");
+
 // Split a string up in individual lines
 pub const LinesIterator = struct {
     string: []const u8,
@@ -61,3 +63,33 @@ pub fn parseInt(t: type, data: []const u8) t {
     }
     return result;
 }
+
+pub const Grid = struct {
+    data: []const u8,
+    width: usize,
+    height: usize,
+
+    pub fn isInsideGrid(self: *const Grid, x: i32, y: i32) bool {
+        return x >= 0 and x < self.width and y >= 0 and y < self.height;
+    }
+
+    pub fn isCharAtPosition(self: *const Grid, x: i32, y: i32, c: u8) bool {
+        if (!self.isInsideGrid(x, y)) return false;
+        return self.data[self.pos(x, y)] == c;
+    }
+
+    pub fn charAtPos(self: *const Grid, x: i32, y: i32) ?u8 {
+        if (!self.isInsideGrid(x, y)) return null;
+
+        return self.data[self.pos(x, y)];
+    }
+
+    pub fn pos(self: *const Grid, x: i32, y: i32) usize {
+        std.debug.assert(x >= 0);
+        std.debug.assert(x < self.width);
+        std.debug.assert(y >= 0);
+        std.debug.assert(y < self.height);
+        // +1 to account for newlines
+        return @intCast(@as(i32, @intCast(self.width + 1)) * y + x);
+    }
+};
