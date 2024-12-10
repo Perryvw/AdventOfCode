@@ -19,16 +19,17 @@ fn solve(data: []const u8) !aoc.Answers {
     const height = @divTrunc(data.len, width);
 
     const grid: common.Grid = .{ .data = data, .width = width, .height = height };
+    var seen = std.AutoHashMap(u64, bool).init(allocator);
+    defer seen.deinit();
 
     for (0..height) |y| {
         for (0..width) |x| {
             if (grid.isCharAtPosition(@intCast(x), @intCast(y), '0')) {
                 // Trailhead
-                var seen = std.AutoHashMap(u64, bool).init(allocator);
                 const r = try numHikes(&grid, @intCast(x), @intCast(y), &seen);
                 p1 += r.unique;
                 p2 += r.all;
-                seen.deinit();
+                seen.clearRetainingCapacity();
             }
         }
     }
