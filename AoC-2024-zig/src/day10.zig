@@ -91,7 +91,6 @@ test "example" {
         \\9876
     );
     try std.testing.expectEqual(1, result.p1.i);
-    //try std.testing.expectEqual(11387, result.p2.i);
 }
 test "example 2" {
     const result = try solve(
@@ -104,7 +103,6 @@ test "example 2" {
         \\9.....9
     );
     try std.testing.expectEqual(2, result.p1.i);
-    //try std.testing.expectEqual(11387, result.p2.i);
 }
 test "example 4" {
     const result = try solve(
@@ -117,7 +115,6 @@ test "example 4" {
         \\987....
     );
     try std.testing.expectEqual(4, result.p1.i);
-    //try std.testing.expectEqual(11387, result.p2.i);
 }
 test "example 5" {
     const result = try solve(
@@ -130,7 +127,6 @@ test "example 5" {
         \\.....01
     );
     try std.testing.expectEqual(3, result.p1.i);
-    //try std.testing.expectEqual(11387, result.p2.i);
 }
 test "larger example" {
     const result = try solve(
