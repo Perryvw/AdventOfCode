@@ -41,6 +41,7 @@ const answers = [_]Solution{
     @import("day8.zig").solution,
     @import("day9.zig").solution,
     @import("day10.zig").solution,
+    @import("day11.zig").solution,
 };
 
 pub fn main() !void {
@@ -50,7 +51,7 @@ pub fn main() !void {
 
     for (answers, 1..) |s, day| {
         const result = try runSolution(s, allocator);
-        std.debug.print("Day {}: p1: {s}, p2: {s}, min: {d}, max: {d}, mean: {d} ({} iterations)\n", .{
+        std.debug.print("Day {}: p1: {s}, p2: {s}, min: {d} ms, max: {d} ms, mean: {d} ms ({} iterations)\n", .{
             day,
             try printAnswer(result.answers.p1),
             try printAnswer(result.answers.p2),
