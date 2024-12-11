@@ -5,7 +5,7 @@ const common = @import("common.zig");
 pub const solution = aoc.Solution{ .WithData = .{
     .data = "data/day9.txt",
     .solve = &solve,
-    .benchmarkIterations = 2,
+    .benchmarkIterations = 5,
 } };
 
 const FileEntry = struct { type: enum { File, Space }, id: u32, size: usize };

@@ -56,6 +56,16 @@ pub fn max(t: type, data: []const t) t {
     return result;
 }
 
+pub fn stddev(t: type, data: []const t) f64 {
+    const mean = avg(t, data);
+    var value: t = 0;
+    for (data) |d| {
+        value += (d - mean) * (d - mean);
+    }
+    value = @divTrunc(value, @as(t, @intCast(data.len)));
+    return std.math.sqrt(@as(f64, @floatFromInt(value)));
+}
+
 pub fn parseInt(t: type, data: []const u8) t {
     var result: t = 0;
     for (data) |c| {

@@ -13,6 +13,7 @@ const RunResult = struct {
     avg_time: i64,
     min_time: i64,
     max_time: i64,
+    std_dev_time: f64,
 };
 
 const DEFAULT_ITERATIONS = 1000;
@@ -45,19 +46,20 @@ const answers = [_]Solution{
 };
 
 pub fn main() !void {
+    _ = std.os.windows.kernel32.SetConsoleOutputCP(65001); // Fix unicode in output
+
     var gpa = std.heap.GeneralPurposeAllocator(.{}){};
     const allocator = gpa.allocator();
     defer std.debug.assert(gpa.deinit() != .leak);
 
     for (answers, 1..) |s, day| {
         const result = try runSolution(s, allocator);
-        std.debug.print("Day {}: p1: {s}, p2: {s}, min: {d} ms, max: {d} ms, mean: {d} ms ({} iterations)\n", .{
+        std.debug.print("Day {: <2}: p1: {s: <16} p2: {s: <16} {d: <8} ms ± σ {d: <7.3} ({} iterations)\n", .{
             day,
             try printAnswer(result.answers.p1),
             try printAnswer(result.answers.p2),
-            @as(f64, @floatFromInt(result.min_time)) / 1000.0,
-            @as(f64, @floatFromInt(result.max_time)) / 1000.0,
             @as(f64, @floatFromInt(result.avg_time)) / 1000.0,
+            result.std_dev_time / 1000.0,
             benchmarkIterations(s),
         });
     }
@@ -110,6 +112,7 @@ fn runSolution(solution: Solution, allocator: std.mem.Allocator) !RunResult {
     const min_time = common.min(i64, runDurations.items);
     const avg_time = common.avg(i64, runDurations.items);
     const max_time = common.max(i64, runDurations.items);
+    const std_dev = common.stddev(i64, runDurations.items);
 
     runDurations.deinit();
 
@@ -122,6 +125,7 @@ fn runSolution(solution: Solution, allocator: std.mem.Allocator) !RunResult {
         .min_time = min_time,
         .max_time = max_time,
         .avg_time = avg_time,
+        .std_dev_time = std_dev,
     };
 }
 
