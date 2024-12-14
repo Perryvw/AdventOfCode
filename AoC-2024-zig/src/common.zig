@@ -67,11 +67,33 @@ pub fn stddev(t: type, data: []const t) f64 {
 }
 
 pub fn parseInt(t: type, data: []const u8) t {
+    var isNegative = false;
     var result: t = 0;
-    for (data) |c| {
+    var start: usize = 0;
+
+    if (isSignedInt(t) and data[0] == '-') {
+        isNegative = true;
+        start = 1;
+    }
+
+    for (data[start..]) |c| {
         result = 10 * result + (c - '0');
     }
+
+    if (isSignedInt(t) and isNegative) {
+        result *= -1;
+    }
+
     return result;
+}
+
+fn isSignedInt(t: type) bool {
+    switch (@typeInfo(t)) {
+        .Int => |info| {
+            return info.signedness == .signed;
+        },
+        else => return false,
+    }
 }
 
 pub const Grid = struct {

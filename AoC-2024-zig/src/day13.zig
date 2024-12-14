@@ -11,9 +11,6 @@ fn solve(data: []const u8) !aoc.Answers {
     var p1: u64 = 0;
     var p2: u64 = 0;
 
-    p1 = 0;
-    p2 = 0;
-
     var iter = std.mem.tokenizeScalar(u8, data, '\n');
     while (iter.next()) |lineA| {
         const lineB = iter.next().?;
