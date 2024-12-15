@@ -54,12 +54,14 @@ fn canReachWithMultiplication(ns: []const u32, target: u64, concat: bool) !bool 
 
 fn canReachWithAddition(ns: []const u32, target: u64, concat: bool) !bool {
     const last = ns[ns.len - 1];
+    if (last > target) return false;
     return try canReachValue(ns[0 .. ns.len - 1], target - last, concat);
 }
 
 fn canReachWithConcatenation(ns: []const u32, target: u64) !bool {
     const last = ns[ns.len - 1];
     const mag = try magnitude(last);
+    if (last > target) return false;
     if (@mod(target - last, mag) != 0) return false;
     return try canReachValue(ns[0 .. ns.len - 1], @divExact(target - last, try magnitude(last)), true);
 }

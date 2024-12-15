@@ -173,7 +173,7 @@ pub fn Grid(t: type) type {
 
         pub fn init(data: t) Grid(t) {
             const width = std.mem.indexOf(u8, data, "\n").?;
-            const height = @divTrunc(data.len, width);
+            const height = @divExact(data.len + 1, width + 1);
 
             return .{
                 .data = data,
@@ -185,7 +185,7 @@ pub fn Grid(t: type) type {
 
         pub fn initCopy(data: []const u8, allocator: std.mem.Allocator) !Grid([]u8) {
             const width = std.mem.indexOf(u8, data, "\n").?;
-            const height = @divTrunc(data.len, width);
+            const height = @divExact(data.len + 1, width + 1);
 
             const gridData = try allocator.alloc(u8, data.len);
             @memcpy(gridData, data);

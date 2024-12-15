@@ -89,7 +89,7 @@ fn solve(data: []const u8) !aoc.Answers {
 
     return .{
         .p1 = .{ .i = antiNodes.count() },
-        .p2 = .{ .i = antiNodes.count() },
+        .p2 = .{ .i = antiNodes2.count() },
     };
 }
 

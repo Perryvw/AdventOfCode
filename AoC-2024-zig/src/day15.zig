@@ -61,7 +61,7 @@ fn solve(data: []const u8) !aoc.Answers {
 
     return .{
         .p1 = .{ .i = score(&grid) },
-        .p2 = .{ .i = score(&grid) },
+        .p2 = .{ .i = score(&grid2) },
     };
 }
 
