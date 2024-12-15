@@ -67,7 +67,7 @@ pub fn stddev(t: type, data: []const t) f64 {
 }
 
 pub fn parseInt(t: type, data: []const u8) t {
-    if (isSignedInt(t)) {
+    if (comptime isSignedInt(t)) {
         return parseSignedint(t, data);
     }
 
@@ -99,7 +99,7 @@ fn parseSignedint(t: type, data: []const u8) t {
     return result;
 }
 
-inline fn isSignedInt(t: type) bool {
+fn isSignedInt(t: type) bool {
     switch (@typeInfo(t)) {
         .Int => |info| {
             return info.signedness == .signed;
@@ -108,8 +108,10 @@ inline fn isSignedInt(t: type) bool {
     }
 }
 
+pub const Coord = struct { x: i32, y: i32 };
+
 pub const Grid = struct {
-    data: []const u8,
+    data: []u8,
     width: usize,
     height: usize,
 
@@ -135,5 +137,40 @@ pub const Grid = struct {
         std.debug.assert(y < self.height);
         // +1 to account for newlines
         return @intCast(@as(i32, @intCast(self.width + 1)) * y + x);
+    }
+
+    pub fn find(self: *const Grid, needle: u8) ?Coord {
+        for (0..self.height) |y| {
+            for (0..self.width) |x| {
+                if (self.isCharAtPosition(@intCast(x), @intCast(y), needle)) {
+                    return .{
+                        .x = @intCast(x),
+                        .y = @intCast(y),
+                    };
+                }
+            }
+        }
+        return null;
+    }
+
+    pub fn print(self: *const Grid) void {
+        for (0..self.height) |y| {
+            for (0..self.width) |x| {
+                std.debug.print("{c}", .{self.charAtPos(@intCast(x), @intCast(y)).?});
+            }
+            std.debug.print("\n", .{});
+        }
+        std.debug.print("\n", .{});
+    }
+
+    pub fn fromString(data: []u8) Grid {
+        const width = std.mem.indexOf(u8, data, "\n").?;
+        const height = @divTrunc(data.len, width);
+
+        return .{
+            .data = data,
+            .width = width,
+            .height = height,
+        };
     }
 };

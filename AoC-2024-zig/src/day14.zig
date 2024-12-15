@@ -2,7 +2,11 @@ const std = @import("std");
 const aoc = @import("aoc.zig");
 const common = @import("common.zig");
 
-pub const solution = aoc.Solution{ .WithData = .{ .data = "data/day14.txt", .solve = &solve, .benchmarkIterations = 10 } };
+pub const solution = aoc.Solution{ .WithData = .{
+    .data = "data/day14.txt",
+    .solve = &solve,
+    .benchmarkIterations = 10,
+} };
 
 const Coord = struct { x: i32, y: i32 };
 const Robot = struct { pos: Coord, vel: Coord };
