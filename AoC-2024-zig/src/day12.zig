@@ -25,18 +25,15 @@ fn solve(data: []const u8) !aoc.Answers {
     const allocator = gpa.allocator();
     defer std.debug.assert(gpa.deinit() != .leak);
 
-    const width = std.mem.indexOf(u8, data, "\n").?;
-    const height = @divTrunc(data.len, width);
-
-    const grid: common.Grid = .{ .data = data, .width = width, .height = height };
+    const grid = common.ImmutableGrid.init(data);
     var regionMap = RegionMap.init(allocator);
     defer regionMap.deinit();
 
     var regions = std.ArrayList(Region).init(allocator);
     defer regions.deinit();
 
-    for (0..height) |y| {
-        for (0..width) |x| {
+    for (0..grid.height) |y| {
+        for (0..grid.width) |x| {
             const key: Coord = .{ .x = @intCast(x), .y = @intCast(y) };
             if (regionMap.contains(key)) continue;
 
@@ -57,7 +54,7 @@ fn solve(data: []const u8) !aoc.Answers {
     };
 }
 
-fn growRegion(x: i32, y: i32, grid: *const common.Grid, region: *Region, map: *RegionMap) !void {
+fn growRegion(x: i32, y: i32, grid: *const common.ImmutableGrid, region: *Region, map: *RegionMap) !void {
     const key: Coord = .{ .x = x, .y = y };
     if (map.contains(key)) return; // Already part of the region
 

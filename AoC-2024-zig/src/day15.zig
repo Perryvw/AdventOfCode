@@ -8,11 +8,6 @@ pub const solution = aoc.Solution{ .WithData = .{
 } };
 
 fn solve(data: []const u8) !aoc.Answers {
-    var p1: u64 = 0;
-    var p2: u64 = 0;
-
-    p2 = 0;
-
     var gpa = std.heap.GeneralPurposeAllocator(.{}){};
     const allocator = gpa.allocator();
     defer std.debug.assert(gpa.deinit() != .leak);
@@ -20,10 +15,6 @@ fn solve(data: []const u8) !aoc.Answers {
     const halfway = std.mem.indexOf(u8, data, "\n\n").?;
     const inpLayout = data[0..halfway];
     const inpInstructions = data[(halfway + 1)..];
-
-    const gridData = try allocator.alloc(u8, inpLayout.len);
-    defer allocator.free(gridData);
-    @memcpy(gridData, inpLayout);
 
     var p2GridData = try allocator.alloc(u8, inpLayout.len * 2 + 1);
     defer allocator.free(p2GridData);
@@ -53,8 +44,9 @@ fn solve(data: []const u8) !aoc.Answers {
         }
     }
 
-    var grid = common.Grid.fromString(gridData);
-    var grid2 = common.Grid.fromString(p2GridData);
+    var grid = try common.MutableGrid.initCopy(inpLayout, allocator);
+    defer grid.deinit();
+    var grid2 = common.MutableGrid.init(p2GridData);
 
     var robotPos = grid.find('@').?;
     var robotPos2 = grid2.find('@').?;
@@ -67,16 +59,13 @@ fn solve(data: []const u8) !aoc.Answers {
         }
     }
 
-    p1 = score(&grid);
-    p2 = score(&grid2);
-
     return .{
-        .p1 = .{ .i = p1 },
-        .p2 = .{ .i = p2 },
+        .p1 = .{ .i = score(&grid) },
+        .p2 = .{ .i = score(&grid) },
     };
 }
 
-fn move(robotX: i32, robotY: i32, instruction: u8, grid: *common.Grid) common.Coord {
+fn move(robotX: i32, robotY: i32, instruction: u8, grid: *common.MutableGrid) common.Coord {
     switch (instruction) {
         '^' => return moveVertical(robotX, robotY, -1, grid),
         '>' => return moveHorizontal(robotX, robotY, 1, grid),
@@ -86,7 +75,7 @@ fn move(robotX: i32, robotY: i32, instruction: u8, grid: *common.Grid) common.Co
     }
 }
 
-fn moveHorizontal(robotX: i32, robotY: i32, direction: i32, grid: *common.Grid) common.Coord {
+fn moveHorizontal(robotX: i32, robotY: i32, direction: i32, grid: *common.MutableGrid) common.Coord {
     if (canMoveHorizontal(robotX, robotY, direction, grid)) {
         doMoveHorizontal(robotX, robotY, direction, grid);
         return .{
@@ -101,7 +90,7 @@ fn moveHorizontal(robotX: i32, robotY: i32, direction: i32, grid: *common.Grid) 
     };
 }
 
-fn doMoveHorizontal(x: i32, y: i32, direction: i32, grid: *common.Grid) void {
+fn doMoveHorizontal(x: i32, y: i32, direction: i32, grid: *common.MutableGrid) void {
     switch (grid.charAtPos(x + direction, y).?) {
         '.' => {
             grid.data[grid.pos(x + direction, y)] = grid.data[grid.pos(x, y)];
@@ -128,7 +117,7 @@ fn doMoveHorizontal(x: i32, y: i32, direction: i32, grid: *common.Grid) void {
     }
 }
 
-fn moveVertical(robotX: i32, robotY: i32, direction: i32, grid: *common.Grid) common.Coord {
+fn moveVertical(robotX: i32, robotY: i32, direction: i32, grid: *common.MutableGrid) common.Coord {
     if (canMoveVertical(robotX, robotY, direction, grid)) {
         doMoveVertical(robotX, robotY, direction, grid);
         return .{
@@ -143,7 +132,7 @@ fn moveVertical(robotX: i32, robotY: i32, direction: i32, grid: *common.Grid) co
     };
 }
 
-fn doMoveVertical(x: i32, y: i32, direction: i32, grid: *common.Grid) void {
+fn doMoveVertical(x: i32, y: i32, direction: i32, grid: *common.MutableGrid) void {
     switch (grid.charAtPos(x, y + direction).?) {
         '.' => {
             grid.data[grid.pos(x, y + direction)] = grid.data[grid.pos(x, y)];
@@ -170,7 +159,7 @@ fn doMoveVertical(x: i32, y: i32, direction: i32, grid: *common.Grid) void {
     }
 }
 
-fn canMoveHorizontal(x: i32, y: i32, direction: i32, grid: *common.Grid) bool {
+fn canMoveHorizontal(x: i32, y: i32, direction: i32, grid: *const common.MutableGrid) bool {
     return switch (grid.charAtPos(x + direction, y).?) {
         '#' => false,
         '.' => true,
@@ -181,7 +170,7 @@ fn canMoveHorizontal(x: i32, y: i32, direction: i32, grid: *common.Grid) bool {
     };
 }
 
-fn canMoveVertical(x: i32, y: i32, direction: i32, grid: *common.Grid) bool {
+fn canMoveVertical(x: i32, y: i32, direction: i32, grid: *const common.MutableGrid) bool {
     return switch (grid.charAtPos(x, y + direction).?) {
         '#' => false,
         '.' => true,
@@ -192,7 +181,7 @@ fn canMoveVertical(x: i32, y: i32, direction: i32, grid: *common.Grid) bool {
     };
 }
 
-fn score(grid: *common.Grid) u64 {
+fn score(grid: *const common.MutableGrid) u64 {
     var s: u64 = 0;
     for (0..grid.height) |y| {
         for (0..grid.width) |x| {

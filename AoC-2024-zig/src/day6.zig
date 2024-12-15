@@ -11,23 +11,17 @@ pub const solution = aoc.Solution{ .WithData = .{
 const Direction = enum { Up, Right, Down, Left };
 
 fn solve(data: []const u8) !aoc.Answers {
-    var p1: i32 = 0;
-    var p2: i32 = 0;
-
     var gpa = std.heap.GeneralPurposeAllocator(.{}){};
     const allocator = gpa.allocator();
     defer std.debug.assert(gpa.deinit() != .leak);
 
-    const width = std.mem.indexOf(u8, data, "\n").?;
-    const height = @divTrunc(data.len, width);
-
-    const grid: common.Grid = .{ .data = data, .width = width, .height = height };
+    const grid = common.ImmutableGrid.init(data);
 
     const guardPos = std.mem.indexOf(u8, data, "^").?;
 
     const startDir = Direction.Up;
-    const startX: i32 = @intCast(@rem(guardPos, width + 1));
-    const startY: i32 = @intCast(@divTrunc(guardPos, width + 1));
+    const startX: i32 = @intCast(@rem(guardPos, grid.width + 1));
+    const startY: i32 = @intCast(@divTrunc(guardPos, grid.width + 1));
 
     var direction = startDir;
     var guardX = startX;
@@ -77,19 +71,17 @@ fn solve(data: []const u8) !aoc.Answers {
         try seen.put(hash(guardX, guardY), true);
     }
 
-    // Subtract one for when we are outside the grid
-    p1 = @intCast(seen.count() - 1);
-
-    p2 = @intCast(p2Seen.count());
-
     return .{
-        .p1 = .{ .i = @intCast(p1) },
-        .p2 = .{ .i = @intCast(p2) },
+        .p1 = .{
+            // Subtract one for when we are outside the grid
+            .i = seen.count() - 1,
+        },
+        .p2 = .{ .i = p2Seen.count() },
     };
 }
 
 fn stepsUntilOutside(
-    grid: *const common.Grid,
+    grid: *const common.ImmutableGrid,
     startX: i32,
     startY: i32,
     startDir: Direction,

@@ -110,67 +110,95 @@ fn isSignedInt(t: type) bool {
 
 pub const Coord = struct { x: i32, y: i32 };
 
-pub const Grid = struct {
-    data: []u8,
-    width: usize,
-    height: usize,
+pub fn Grid(t: type) type {
+    return struct {
+        const Self = @This();
 
-    pub fn isInsideGrid(self: *const Grid, x: i32, y: i32) bool {
-        return x >= 0 and x < self.width and y >= 0 and y < self.height;
-    }
+        data: t,
+        width: usize,
+        height: usize,
+        allocator: ?std.mem.Allocator,
 
-    pub fn isCharAtPosition(self: *const Grid, x: i32, y: i32, c: u8) bool {
-        if (!self.isInsideGrid(x, y)) return false;
-        return self.data[self.pos(x, y)] == c;
-    }
+        pub fn deinit(self: Self) void {
+            self.allocator.?.free(self.data);
+        }
 
-    pub fn charAtPos(self: *const Grid, x: i32, y: i32) ?u8 {
-        if (!self.isInsideGrid(x, y)) return null;
+        pub fn isInsideGrid(self: Self, x: i32, y: i32) bool {
+            return x >= 0 and x < self.width and y >= 0 and y < self.height;
+        }
 
-        return self.data[self.pos(x, y)];
-    }
+        pub fn isCharAtPosition(self: Self, x: i32, y: i32, c: u8) bool {
+            if (!self.isInsideGrid(x, y)) return false;
+            return self.data[self.pos(x, y)] == c;
+        }
 
-    pub fn pos(self: *const Grid, x: i32, y: i32) usize {
-        std.debug.assert(x >= 0);
-        std.debug.assert(x < self.width);
-        std.debug.assert(y >= 0);
-        std.debug.assert(y < self.height);
-        // +1 to account for newlines
-        return @intCast(@as(i32, @intCast(self.width + 1)) * y + x);
-    }
+        pub fn charAtPos(self: Self, x: i32, y: i32) ?u8 {
+            if (!self.isInsideGrid(x, y)) return null;
 
-    pub fn find(self: *const Grid, needle: u8) ?Coord {
-        for (0..self.height) |y| {
-            for (0..self.width) |x| {
-                if (self.isCharAtPosition(@intCast(x), @intCast(y), needle)) {
-                    return .{
-                        .x = @intCast(x),
-                        .y = @intCast(y),
-                    };
+            return self.data[self.pos(x, y)];
+        }
+
+        pub fn pos(self: Self, x: i32, y: i32) usize {
+            std.debug.assert(x >= 0);
+            std.debug.assert(x < self.width);
+            std.debug.assert(y >= 0);
+            std.debug.assert(y < self.height);
+            // +1 to account for newlines
+            return @intCast(@as(i32, @intCast(self.width + 1)) * y + x);
+        }
+
+        pub fn find(self: Self, needle: u8) ?Coord {
+            for (0..self.height) |y| {
+                for (0..self.width) |x| {
+                    if (self.isCharAtPosition(@intCast(x), @intCast(y), needle)) {
+                        return .{
+                            .x = @intCast(x),
+                            .y = @intCast(y),
+                        };
+                    }
                 }
             }
+            return null;
         }
-        return null;
-    }
 
-    pub fn print(self: *const Grid) void {
-        for (0..self.height) |y| {
-            for (0..self.width) |x| {
-                std.debug.print("{c}", .{self.charAtPos(@intCast(x), @intCast(y)).?});
+        pub fn print(self: Self) void {
+            for (0..self.height) |y| {
+                for (0..self.width) |x| {
+                    std.debug.print("{c}", .{self.charAtPos(@intCast(x), @intCast(y)).?});
+                }
+                std.debug.print("\n", .{});
             }
             std.debug.print("\n", .{});
         }
-        std.debug.print("\n", .{});
-    }
 
-    pub fn fromString(data: []u8) Grid {
-        const width = std.mem.indexOf(u8, data, "\n").?;
-        const height = @divTrunc(data.len, width);
+        pub fn init(data: t) Grid(t) {
+            const width = std.mem.indexOf(u8, data, "\n").?;
+            const height = @divTrunc(data.len, width);
 
-        return .{
-            .data = data,
-            .width = width,
-            .height = height,
-        };
-    }
-};
+            return .{
+                .data = data,
+                .width = width,
+                .height = height,
+                .allocator = null,
+            };
+        }
+
+        pub fn initCopy(data: []const u8, allocator: std.mem.Allocator) !Grid([]u8) {
+            const width = std.mem.indexOf(u8, data, "\n").?;
+            const height = @divTrunc(data.len, width);
+
+            const gridData = try allocator.alloc(u8, data.len);
+            @memcpy(gridData, data);
+
+            return .{
+                .data = gridData,
+                .width = width,
+                .height = height,
+                .allocator = allocator,
+            };
+        }
+    };
+}
+
+pub const ImmutableGrid = Grid([]const u8);
+pub const MutableGrid = Grid([]u8);

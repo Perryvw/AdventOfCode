@@ -15,15 +15,13 @@ fn solve(data: []const u8) !aoc.Answers {
     const allocator = gpa.allocator();
     defer std.debug.assert(gpa.deinit() != .leak);
 
-    const width = std.mem.indexOf(u8, data, "\n").?;
-    const height = @divTrunc(data.len, width);
+    const grid = common.ImmutableGrid.init(data);
 
-    const grid: common.Grid = .{ .data = data, .width = width, .height = height };
     var seen = std.AutoHashMap(u64, bool).init(allocator);
     defer seen.deinit();
 
-    for (0..height) |y| {
-        for (0..width) |x| {
+    for (0..grid.height) |y| {
+        for (0..grid.width) |x| {
             if (grid.isCharAtPosition(@intCast(x), @intCast(y), '0')) {
                 // Trailhead
                 const r = try numHikes(&grid, @intCast(x), @intCast(y), &seen);
@@ -42,7 +40,7 @@ fn solve(data: []const u8) !aoc.Answers {
 
 const HikesResult = struct { unique: u32, all: u32 };
 
-fn numHikes(grid: *const common.Grid, x: i32, y: i32, seen: *std.AutoHashMap(u64, bool)) !HikesResult {
+fn numHikes(grid: *const common.ImmutableGrid, x: i32, y: i32, seen: *std.AutoHashMap(u64, bool)) !HikesResult {
     if (grid.isCharAtPosition(x, y, '9')) {
         const h = hash(x, y);
         var unique: u32 = 0;

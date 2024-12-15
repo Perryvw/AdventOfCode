@@ -11,13 +11,10 @@ fn solve(data: []const u8) !aoc.Answers {
     var p1: i32 = 0;
     var p2: i32 = 0;
 
-    const width = std.mem.indexOf(u8, data, "\n").?;
-    const height = @divTrunc(data.len, width);
+    const grid = common.ImmutableGrid.init(data);
 
-    const grid: common.Grid = .{ .data = data, .width = width, .height = height };
-
-    for (0..width) |ux| {
-        for (0..height) |uy| {
+    for (0..grid.width) |ux| {
+        for (0..grid.height) |uy| {
             const x: i32 = @intCast(ux);
             const y: i32 = @intCast(uy);
             if (grid.isCharAtPosition(x, y, 'X')) {

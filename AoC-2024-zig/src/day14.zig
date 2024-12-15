@@ -23,8 +23,6 @@ fn solve2(data: []const u8, roomWidth: i32, roomHeight: i32) !aoc.Answers {
     var p1: u64 = 0;
     var p2: u64 = 0;
 
-    p2 = 0;
-
     var robots: [500]Robot = undefined;
     var numRobots: usize = 0;
 

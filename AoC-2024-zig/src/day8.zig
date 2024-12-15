@@ -10,17 +10,11 @@ pub const solution = aoc.Solution{ .WithData = .{
 const Coord = struct { x: i32, y: i32 };
 
 fn solve(data: []const u8) !aoc.Answers {
-    var p1: u32 = 0;
-    var p2: u32 = 0;
-
     var gpa = std.heap.GeneralPurposeAllocator(.{}){};
     const allocator = gpa.allocator();
     defer std.debug.assert(gpa.deinit() != .leak);
 
-    const width = std.mem.indexOf(u8, data, "\n").?;
-    const height = @divTrunc(data.len, width);
-
-    const grid: common.Grid = .{ .data = data, .width = width, .height = height };
+    const grid = common.ImmutableGrid.init(data);
 
     var antennas = std.AutoHashMap(u8, std.ArrayList(Coord)).init(allocator);
     defer {
@@ -29,8 +23,8 @@ fn solve(data: []const u8) !aoc.Answers {
         antennas.deinit();
     }
 
-    for (0..height) |y| {
-        for (0..width) |x| {
+    for (0..grid.height) |y| {
+        for (0..grid.width) |x| {
             const c = grid.charAtPos(@intCast(x), @intCast(y)).?;
             if (c != '.') {
                 const antenna: Coord = .{
@@ -93,12 +87,9 @@ fn solve(data: []const u8) !aoc.Answers {
         }
     }
 
-    p1 = antiNodes.count();
-    p2 = antiNodes2.count();
-
     return .{
-        .p1 = .{ .i = @intCast(p1) },
-        .p2 = .{ .i = @intCast(p2) },
+        .p1 = .{ .i = antiNodes.count() },
+        .p2 = .{ .i = antiNodes.count() },
     };
 }
 
