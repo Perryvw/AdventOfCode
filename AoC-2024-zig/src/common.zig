@@ -108,7 +108,46 @@ fn isSignedInt(t: type) bool {
     }
 }
 
-pub const Coord = struct { x: i32, y: i32 };
+pub const Direction = enum {
+    Up,
+    Right,
+    Down,
+    Left,
+    pub fn turnLeft(self: Direction) Direction {
+        return switch (self) {
+            .Up => .Left,
+            .Right => .Up,
+            .Down => .Right,
+            .Left => .Down,
+        };
+    }
+    pub fn turnRight(self: Direction) Direction {
+        return switch (self) {
+            .Up => .Right,
+            .Right => .Down,
+            .Down => .Left,
+            .Left => .Up,
+        };
+    }
+    pub fn vector(self: Direction) Coord {
+        return switch (self) {
+            .Up => .{ .x = 0, .y = -1 },
+            .Down => .{ .x = 0, .y = 1 },
+            .Left => .{ .x = -1, .y = 0 },
+            .Right => .{ .x = 1, .y = 0 },
+        };
+    }
+};
+pub const Coord = struct {
+    x: i32,
+    y: i32,
+    pub fn add(self: Coord, other: Coord) Coord {
+        return .{
+            .x = self.x + other.x,
+            .y = self.y + other.y,
+        };
+    }
+};
 
 pub fn Grid(t: type) type {
     return struct {

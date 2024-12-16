@@ -8,8 +8,6 @@ pub const solution = aoc.Solution{ .WithData = .{
     .benchmarkIterations = 5,
 } };
 
-const Direction = enum { Up, Right, Down, Left };
-
 fn solve(data: []const u8) !aoc.Answers {
     var gpa = std.heap.GeneralPurposeAllocator(.{}){};
     const allocator = gpa.allocator();
@@ -19,7 +17,7 @@ fn solve(data: []const u8) !aoc.Answers {
 
     const guardPos = std.mem.indexOf(u8, data, "^").?;
 
-    const startDir = Direction.Up;
+    const startDir = common.Direction.Up;
     const startX: i32 = @intCast(@rem(guardPos, grid.width + 1));
     const startY: i32 = @intCast(@divTrunc(guardPos, grid.width + 1));
 
@@ -42,10 +40,12 @@ fn solve(data: []const u8) !aoc.Answers {
     defer hm2.deinit();
 
     while (grid.isInsideGrid(guardX, guardY)) {
-        const dx: i32, const dy: i32 = directionVector(direction);
+        const v = direction.vector();
+        const dx = v.x;
+        const dy = v.y;
 
         if (grid.isCharAtPosition(guardX + dx, guardY + dy, '#')) {
-            direction = turnRight(direction);
+            direction = direction.turnRight();
             continue;
         } else {
             hm1.clearRetainingCapacity();
@@ -84,7 +84,7 @@ fn stepsUntilOutside(
     grid: *const common.ImmutableGrid,
     startX: i32,
     startY: i32,
-    startDir: Direction,
+    startDir: common.Direction,
     obstacleX: i32,
     obstacleY: i32,
     seen: *std.AutoHashMap(i64, bool),
@@ -101,11 +101,13 @@ fn stepsUntilOutside(
         }
         try seenDirection.put(ndh, true);
 
-        const dx: i32, const dy: i32 = directionVector(direction);
+        const v = direction.vector();
+        const dx = v.x;
+        const dy = v.y;
 
         while (grid.isInsideGrid(guardX, guardY)) {
             if (grid.isCharAtPosition(guardX + dx, guardY + dy, '#') or (guardX + dx == obstacleX and guardY + dy == obstacleY)) {
-                direction = turnRight(direction);
+                direction = direction.turnRight();
                 break;
             }
 
@@ -124,26 +126,8 @@ fn hash(x: i32, y: i32) i64 {
     return @as(i64, x) * 1000 + @as(i64, y);
 }
 
-fn hashDirection(x: i32, y: i32, direction: Direction) i64 {
+fn hashDirection(x: i32, y: i32, direction: common.Direction) i64 {
     return @as(i64, x) * 10000 + @as(i64, y) * 10 + @intFromEnum(direction);
-}
-
-fn turnRight(dir: Direction) Direction {
-    return switch (dir) {
-        .Up => .Right,
-        .Right => .Down,
-        .Down => .Left,
-        .Left => .Up,
-    };
-}
-
-fn directionVector(dir: Direction) std.meta.Tuple(&[_]type{ i32, i32 }) {
-    return switch (dir) {
-        .Up => .{ 0, -1 },
-        .Down => .{ 0, 1 },
-        .Left => .{ -1, 0 },
-        .Right => .{ 1, 0 },
-    };
 }
 
 test "example" {
