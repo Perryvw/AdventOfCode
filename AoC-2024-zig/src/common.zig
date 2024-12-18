@@ -177,6 +177,12 @@ pub fn Grid(t: type) type {
             return self.data[self.pos(x, y)];
         }
 
+        pub fn put(self: Self, x: i32, y: i32, v: anytype) void {
+            if (!self.isInsideGrid(x, y)) return;
+
+            self.data[self.pos(x, y)] = v;
+        }
+
         pub fn pos(self: Self, x: i32, y: i32) usize {
             std.debug.assert(x >= 0);
             std.debug.assert(x < self.width);
