@@ -9,11 +9,7 @@ pub const solution = aoc.Solution{ .WithData = .{
 
 const Coord = struct { x: i32, y: i32 };
 
-fn solve(data: []const u8) !aoc.Answers {
-    var gpa = std.heap.GeneralPurposeAllocator(.{}){};
-    const allocator = gpa.allocator();
-    defer std.debug.assert(gpa.deinit() != .leak);
-
+fn solve(allocator: std.mem.Allocator, data: []const u8) !aoc.Answers {
     const grid = common.ImmutableGrid.init(data);
 
     var antennas = std.AutoHashMap(u8, std.ArrayList(Coord)).init(allocator);
@@ -98,7 +94,7 @@ fn hash(a: i32, b: i32) i64 {
 }
 
 test "example" {
-    const result = try solve(
+    const result = try solve(std.testing.allocator,
         \\............
         \\........0...
         \\.....0......

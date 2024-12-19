@@ -9,15 +9,11 @@ pub const solution = aoc.Solution{ .WithData = .{
 
 const DependencyMap = std.AutoHashMap(u8, std.ArrayList(u8));
 
-fn solve(data: []const u8) !aoc.Answers {
+fn solve(allocator: std.mem.Allocator, data: []const u8) !aoc.Answers {
     var p1: i32 = 0;
     var p2: i32 = 0;
 
     const split = std.mem.indexOf(u8, data, "\n\n").?;
-
-    var gpa = std.heap.GeneralPurposeAllocator(.{}){};
-    const allocator = gpa.allocator();
-    defer std.debug.assert(gpa.deinit() != .leak);
 
     var dependencyMap = DependencyMap.init(allocator);
     defer {
@@ -93,7 +89,7 @@ fn middlePage(pages: []const u8) u8 {
 }
 
 test "example" {
-    const result = try solve(
+    const result = try solve(std.testing.allocator,
         \\47|53
         \\97|13
         \\97|61

@@ -9,7 +9,7 @@ pub const solution = aoc.Solution{ .WithData = .{
 
 const Direction = enum { Increasing, Decreasing };
 
-fn solve(data: []const u8) !aoc.Answers {
+fn solve(_: std.mem.Allocator, data: []const u8) !aoc.Answers {
     var p1: i32 = 0;
     var p2: i32 = 0;
 
@@ -94,7 +94,7 @@ fn isValidDifference(a: i32, b: i32) bool {
 }
 
 test "example input" {
-    const r = try solve(
+    const r = try solve(std.testing.allocator,
         \\7 6 4 2 1
         \\1 2 7 8 9
         \\9 7 6 2 1
@@ -107,23 +107,23 @@ test "example input" {
 }
 
 test "p2: second character wrong" {
-    try std.testing.expectEqual(1, (try solve("1 3 2 4 5")).p2.i);
+    try std.testing.expectEqual(1, (try solve(std.testing.allocator, "1 3 2 4 5")).p2.i);
 }
 
 test "p2: second character wrong direction" {
-    try std.testing.expectEqual(1, (try solve("10 3 11 12 13")).p2.i);
+    try std.testing.expectEqual(1, (try solve(std.testing.allocator, "10 3 11 12 13")).p2.i);
 }
 
 test "p2: second character right direction but wrong" {
-    try std.testing.expectEqual(1, (try solve("10 3 11 12 13")).p2.i);
+    try std.testing.expectEqual(1, (try solve(std.testing.allocator, "10 3 11 12 13")).p2.i);
 }
 
 test "p2: first character wrong" {
-    try std.testing.expectEqual(1, (try solve("10 1 2 4 5")).p2.i);
+    try std.testing.expectEqual(1, (try solve(std.testing.allocator, "10 1 2 4 5")).p2.i);
 }
 
 test "p2" {
-    const r = try solve(
+    const r = try solve(std.testing.allocator,
         \\48 46 47 49 51 54 56
         \\1 1 2 3 4 5
         \\1 2 3 4 5 5

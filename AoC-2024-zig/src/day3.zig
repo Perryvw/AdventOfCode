@@ -13,7 +13,7 @@ fn ParseResult(valueType: type) type {
 
 const DoOrDont = enum { Do, Dont };
 
-fn solve(data: []const u8) !aoc.Answers {
+fn solve(_: std.mem.Allocator, data: []const u8) !aoc.Answers {
     var p1: u64 = 0;
     var p2: u64 = 0;
 
@@ -131,9 +131,15 @@ fn parseDoDont(data: []const u8) ParseResult(struct { value: DoOrDont, size: u8 
 }
 
 test "example p1" {
-    try std.testing.expectEqual(161, (try solve("xmul(2,4)%&mul[3,7]!@^do_not_mul(5,5)+mul(32,64]then(mul(11,8)mul(8,5))")).p1.i);
+    try std.testing.expectEqual(161, (try solve(
+        std.testing.allocator,
+        "xmul(2,4)%&mul[3,7]!@^do_not_mul(5,5)+mul(32,64]then(mul(11,8)mul(8,5))",
+    )).p1.i);
 }
 
 test "example p2" {
-    try std.testing.expectEqual(48, (try solve("xmul(2,4)&mul[3,7]!^don't()_mul(5,5)+mul(32,64](mul(11,8)undo()?mul(8,5))")).p2.i);
+    try std.testing.expectEqual(48, (try solve(
+        std.testing.allocator,
+        "xmul(2,4)&mul[3,7]!^don't()_mul(5,5)+mul(32,64](mul(11,8)undo()?mul(8,5))",
+    )).p2.i);
 }

@@ -8,22 +8,18 @@ pub const solution = aoc.Solution{ .WithData = .{
     .benchmarkIterations = 1,
 } };
 
-fn solve(data: []const u8) !aoc.Answers {
-    const p1: u64 = (try solvep1(data, 70, 70, 1024)).?;
-    const p2: u64 = try solvep2(data, 70, 70, 348);
+fn solve(allocator: std.mem.Allocator, data: []const u8) !aoc.Answers {
+    const p1 = (try solvep1(allocator, data, 70, 70, 1024)).?;
+    const p2 = try solvep2(allocator, data, 70, 70, 348);
 
     return .{
         .p1 = .{ .i = p1 },
-        .p2 = .{ .i = p2 },
+        .p2 = .{ .str = p2 },
     };
 }
 
-fn solvep1(data: []const u8, width: u32, height: u32, inputLen: u32) !?u64 {
-    var gpa = std.heap.GeneralPurposeAllocator(.{}){};
-    const allocator = gpa.allocator();
-    defer std.debug.assert(gpa.deinit() != .leak);
-
-    var buffer = std.mem.zeroes([71 * 71]bool);
+fn solvep1(allocator: std.mem.Allocator, data: []const u8, width: u32, height: u32, inputLen: u32) !?u64 {
+    var buffer = std.mem.zeroes([72 * 72]bool);
     const grid: common.Grid([]bool) = .{
         .data = &buffer,
         .width = width + 1,
@@ -105,21 +101,23 @@ fn solvep1(data: []const u8, width: u32, height: u32, inputLen: u32) !?u64 {
     return result;
 }
 
-fn solvep2(data: []const u8, width: u32, height: u32, start: u32) !u64 {
+fn solvep2(allocator: std.mem.Allocator, data: []const u8, width: u32, height: u32, start: u32) ![]const u8 {
     var i: u32 = 0;
     var lines = std.mem.tokenizeScalar(u8, data, '\n');
+
     var previous: []const u8 = "";
+
     while (lines.next()) |line| {
         if (i >= start) {
-            if (try solvep1(data, width, height, i) == null) {
-                const x, const y = parseNums(previous);
-                return @as(u64, @intCast(x)) * 1000 + y;
+            if (try solvep1(allocator, data, width, height, i) == null) {
+                return try allocator.dupe(u8, previous);
             }
         }
         previous = line;
         i += 1;
     }
-    return 0;
+
+    return previous;
 }
 
 fn parseNums(line: []const u8) std.meta.Tuple(&.{ u8, u8 }) {
@@ -131,7 +129,7 @@ fn parseNums(line: []const u8) std.meta.Tuple(&.{ u8, u8 }) {
 }
 
 test "example p1" {
-    const result = try solvep1(
+    const result = try solvep1(std.testing.allocator,
         \\5,4
         \\4,2
         \\4,5
@@ -162,7 +160,7 @@ test "example p1" {
 }
 
 test "example p2" {
-    const result = try solvep2(
+    const result = try solvep2(std.testing.allocator,
         \\5,4
         \\4,2
         \\4,5
@@ -189,5 +187,6 @@ test "example p2" {
         \\1,6
         \\2,0
     , 6, 6, 13);
-    try std.testing.expectEqual(6001, result);
+    defer std.testing.allocator.free(result);
+    try std.testing.expectEqualStrings("6,1", result);
 }

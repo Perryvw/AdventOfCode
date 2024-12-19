@@ -7,23 +7,19 @@ pub const solution = aoc.Solution{ .Func = .{
     .benchmarkIterations = 1,
 } };
 
-fn solve() !aoc.Answers {
-    var gpa = std.heap.GeneralPurposeAllocator(.{}){};
-    const allocator = gpa.allocator();
-    defer std.debug.assert(gpa.deinit() != .leak);
-
-    const p1: u64 = 0;
-
+fn solve(allocator: std.mem.Allocator) !aoc.Answers {
     var registers = [3]u64{ 30878003, 0, 0 };
     const tape = [_]u8{ 2, 4, 1, 2, 7, 5, 0, 3, 4, 7, 1, 7, 5, 5, 3, 0 };
     const result = try runCode(allocator, &registers, &tape);
     defer result.deinit();
 
-    // TODO: Remove this and return a proper allocated string
-    for (result.items) |i| {
-        std.debug.print("{},", .{i});
+    const p1 = try allocator.alloc(u8, result.items.len * 2 - 1);
+
+    for (0..result.items.len - 1) |i| {
+        p1[i * 2] = result.items[i] + '0';
+        p1[i * 2 + 1] = ',';
     }
-    std.debug.print("\n", .{});
+    p1[p1.len - 1] = result.items[result.items.len - 1] + '0';
 
     // p2: 2,4,1,2,7,5,0,3,4,7,1,7,5,5,3,0
     //b = a >> 3;
@@ -54,10 +50,11 @@ fn solve() !aoc.Answers {
         }
         a <<= 3;
     }
+    // undo last shift
     a >>= 3;
 
     return .{
-        .p1 = .{ .i = p1 },
+        .p1 = .{ .str = p1 },
         .p2 = .{ .i = a },
     };
 }

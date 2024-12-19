@@ -11,7 +11,7 @@ pub const solution = aoc.Solution{ .WithData = .{
 const FileEntry = struct { type: enum { File, Space }, id: u32, size: usize };
 const FileEntryList = std.DoublyLinkedList(FileEntry);
 
-fn solve(data: []const u8) !aoc.Answers {
+fn solve(_: std.mem.Allocator, data: []const u8) !aoc.Answers {
     var buffer: [10 * 20000]u32 = undefined;
 
     var cursorBack: usize = 0;
@@ -133,7 +133,7 @@ fn checksumList(list: FileEntryList) u64 {
 }
 
 test "example" {
-    const result = try solve(
+    const result = try solve(std.testing.allocator,
         \\2333133121414131402
     );
     try std.testing.expectEqual(1928, result.p1.i);

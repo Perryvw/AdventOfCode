@@ -7,7 +7,7 @@ pub const solution = aoc.Solution{ .WithData = .{
     .solve = &solve,
 } };
 
-fn solve(data: []const u8) !aoc.Answers {
+fn solve(_: std.mem.Allocator, data: []const u8) !aoc.Answers {
     var p1: i32 = 0;
     var p2: i32 = 0;
 
@@ -71,7 +71,7 @@ fn solve(data: []const u8) !aoc.Answers {
 }
 
 test "small example" {
-    const result = try solve(
+    const result = try solve(std.testing.allocator,
         \\..X...
         \\.SAMX.
         \\.A..A.
@@ -82,7 +82,7 @@ test "small example" {
 }
 
 test "example" {
-    const result = try solve(
+    const result = try solve(std.testing.allocator,
         \\MMMSXXMASM
         \\MSAMXMSMSA
         \\AMXSXMAAMM

@@ -8,11 +8,7 @@ pub const solution = aoc.Solution{ .WithData = .{
     .benchmarkIterations = 5,
 } };
 
-fn solve(data: []const u8) !aoc.Answers {
-    var gpa = std.heap.GeneralPurposeAllocator(.{}){};
-    const allocator = gpa.allocator();
-    defer std.debug.assert(gpa.deinit() != .leak);
-
+fn solve(allocator: std.mem.Allocator, data: []const u8) !aoc.Answers {
     const grid = common.ImmutableGrid.init(data);
 
     const guardPos = std.mem.indexOf(u8, data, "^").?;
@@ -131,7 +127,7 @@ fn hashDirection(x: i32, y: i32, direction: common.Direction) i64 {
 }
 
 test "example" {
-    const result = try solve(
+    const result = try solve(std.testing.allocator,
         \\....#.....
         \\.........#
         \\..........
@@ -148,7 +144,7 @@ test "example" {
 }
 
 test "edge case" {
-    const result = try solve(
+    const result = try solve(std.testing.allocator,
         \\....#.....
         \\.........#
         \\..........

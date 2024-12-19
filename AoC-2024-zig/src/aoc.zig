@@ -5,9 +5,20 @@ pub const Answer = union(enum) { i: u64, str: []const u8 };
 pub const Answers = struct {
     p1: Answer,
     p2: Answer,
+
+    pub fn deinit(self: *const Answers, allocator: std.mem.Allocator) void {
+        switch (self.p1) {
+            .i => |_| {},
+            .str => |s| allocator.free(s),
+        }
+        switch (self.p2) {
+            .i => |_| {},
+            .str => |s| allocator.free(s),
+        }
+    }
 };
-const Solver = *const fn () anyerror!Answers;
-const SolverWithData = *const fn (data: []const u8) anyerror!Answers;
+const Solver = *const fn (allocator: std.mem.Allocator) anyerror!Answers;
+const SolverWithData = *const fn (allocator: std.mem.Allocator, data: []const u8) anyerror!Answers;
 const RunResult = struct {
     answers: Answers,
     avg_time: i64,
@@ -62,7 +73,8 @@ pub fn main() !void {
 
     for (answers, 1..) |s, day| {
         const result = try runSolution(s, allocator);
-        std.debug.print("Day {: <2}: p1: {s: <16} p2: {s: <16} {d: <8} ms ± σ {d: <7.3} ({} iterations)\n", .{
+        defer result.answers.deinit(allocator);
+        std.debug.print("Day {: <2}: p1: {s: <17} p2: {s: <16} {d: <8} ms ± σ {d: <7.3} ({} iterations)\n", .{
             day,
             try printAnswer(result.answers.p1),
             try printAnswer(result.answers.p2),
@@ -109,10 +121,10 @@ fn runSolution(solution: Solution, allocator: std.mem.Allocator) !RunResult {
     var data: ?[]const u8 = null;
 
     const result = switch (solution) {
-        .Func => |f| try f.solve(),
+        .Func => |f| try f.solve(allocator),
         .WithData => |dataSolver| blk: {
             data = try readFile(dataSolver.data, allocator);
-            break :blk try dataSolver.solve(data.?);
+            break :blk try dataSolver.solve(allocator, data.?);
         },
     };
 
@@ -145,16 +157,18 @@ fn benchmark(action: Solution, data: ?[]const u8, iterations: u32, allocator: st
     if (data) |d| {
         for (0..iterations) |_| {
             const start = timer.read();
-            std.mem.doNotOptimizeAway(try action.WithData.solve(d));
+            const answer = try action.WithData.solve(allocator, d);
             const end = timer.lap();
             try result.append(@intCast(@divTrunc(end - start, 1000)));
+            answer.deinit(allocator);
         }
     } else {
         for (0..iterations) |_| {
             const start = timer.read();
-            std.mem.doNotOptimizeAway(try action.Func.solve());
+            const answer = try action.Func.solve(allocator);
             const end = timer.lap();
             try result.append(@intCast(@divTrunc(end - start, 1000)));
+            answer.deinit(allocator);
         }
     }
 

@@ -10,7 +10,7 @@ pub const solution = aoc.Solution{ .Func = .{
 const CacheEntry = struct { num: u64, steps: u64 };
 const Cache = std.AutoHashMap(CacheEntry, u64);
 
-fn solve() !aoc.Answers {
+fn solve(_: std.mem.Allocator) !aoc.Answers {
     const inp = [_]u64{ 3028, 78, 973951, 5146801, 5, 0, 23533, 857 };
 
     return .{

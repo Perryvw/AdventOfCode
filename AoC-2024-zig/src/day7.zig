@@ -7,7 +7,7 @@ pub const solution = aoc.Solution{ .WithData = .{
     .solve = &solve,
 } };
 
-fn solve(data: []const u8) !aoc.Answers {
+fn solve(_: std.mem.Allocator, data: []const u8) !aoc.Answers {
     var p1: u64 = 0;
     var p2: u64 = 0;
 
@@ -71,7 +71,7 @@ inline fn magnitude(v: u32) !u32 {
 }
 
 test "example" {
-    const result = try solve(
+    const result = try solve(std.testing.allocator,
         \\190: 10 19
         \\3267: 81 40 27
         \\83: 17 5

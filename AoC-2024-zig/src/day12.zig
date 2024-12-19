@@ -17,13 +17,9 @@ const Coord = struct { x: i32, y: i32 };
 
 const RegionMap = std.AutoHashMap(Coord, *Region);
 
-fn solve(data: []const u8) !aoc.Answers {
+fn solve(allocator: std.mem.Allocator, data: []const u8) !aoc.Answers {
     var p1: u64 = 0;
     var p2: u64 = 0;
-
-    var gpa = std.heap.GeneralPurposeAllocator(.{}){};
-    const allocator = gpa.allocator();
-    defer std.debug.assert(gpa.deinit() != .leak);
 
     const grid = common.ImmutableGrid.init(data);
     var regionMap = RegionMap.init(allocator);
@@ -127,7 +123,7 @@ fn costDiscounted(region: Region) u64 {
 }
 
 test "example" {
-    const result = try solve(
+    const result = try solve(std.testing.allocator,
         \\AAAA
         \\BBCD
         \\BBCC
@@ -138,7 +134,7 @@ test "example" {
 }
 
 test "plots in plots" {
-    const result = try solve(
+    const result = try solve(std.testing.allocator,
         \\OOOOO
         \\OXOXO
         \\OOOOO
@@ -150,7 +146,7 @@ test "plots in plots" {
 }
 
 test "larger example" {
-    const result = try solve(
+    const result = try solve(std.testing.allocator,
         \\RRRRIICCFF
         \\RRRRIICCCF
         \\VVRRRCCFFF
@@ -167,7 +163,7 @@ test "larger example" {
 }
 
 test "p2 extra example 1" {
-    const result = try solve(
+    const result = try solve(std.testing.allocator,
         \\EEEEE
         \\EXXXX
         \\EEEEE
@@ -178,7 +174,7 @@ test "p2 extra example 1" {
 }
 
 test "p2 extra example 2" {
-    const result = try solve(
+    const result = try solve(std.testing.allocator,
         \\AAAAAA
         \\AAABBA
         \\AAABBA

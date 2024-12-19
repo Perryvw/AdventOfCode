@@ -13,7 +13,7 @@ const Robot = struct { pos: Coord, vel: Coord };
 
 const STEPS = 100;
 
-fn solve(data: []const u8) !aoc.Answers {
+fn solve(_: std.mem.Allocator, data: []const u8) !aoc.Answers {
     const BATHROOM_WIDTH = 101;
     const BATHROOM_HEIGHT = 103;
     return solve2(data, BATHROOM_WIDTH, BATHROOM_HEIGHT);

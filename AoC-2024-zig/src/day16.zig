@@ -16,12 +16,8 @@ const State = struct {
 };
 const SeenMap = std.AutoHashMap(common.Coord, bool);
 
-fn solve(data: []const u8) !aoc.Answers {
+fn solve(allocator: std.mem.Allocator, data: []const u8) !aoc.Answers {
     var p1: u64 = 1000000;
-
-    var gpa = std.heap.GeneralPurposeAllocator(.{}){};
-    const allocator = gpa.allocator();
-    defer std.debug.assert(gpa.deinit() != .leak);
 
     var arena = std.heap.ArenaAllocator.init(allocator);
     const arenaAllocator = arena.allocator();
@@ -124,7 +120,7 @@ fn lessThan(context: void, s1: *State, s2: *State) std.math.Order {
 }
 
 test "example" {
-    const result = try solve(
+    const result = try solve(std.testing.allocator,
         \\###############
         \\#.......#....E#
         \\#.#.###.#.###.#
@@ -146,7 +142,7 @@ test "example" {
 }
 
 test "second example" {
-    const result = try solve(
+    const result = try solve(std.testing.allocator,
         \\#################
         \\#...#...#...#..E#
         \\#.#.#.#.#.#.#.#.#

@@ -7,11 +7,7 @@ pub const solution = aoc.Solution{ .WithData = .{
     .solve = &solve,
 } };
 
-fn solve(data: []const u8) !aoc.Answers {
-    var gpa = std.heap.GeneralPurposeAllocator(.{}){};
-    const allocator = gpa.allocator();
-    defer std.debug.assert(gpa.deinit() != .leak);
-
+fn solve(allocator: std.mem.Allocator, data: []const u8) !aoc.Answers {
     const halfway = std.mem.indexOf(u8, data, "\n\n").?;
     const inpLayout = data[0..halfway];
     const inpInstructions = data[(halfway + 1)..];
@@ -194,7 +190,7 @@ fn score(grid: *const common.MutableGrid) u64 {
 }
 
 test "example" {
-    const result = try solve(
+    const result = try solve(std.testing.allocator,
         \\##########
         \\#..O..O.O#
         \\#......O.#
@@ -222,7 +218,7 @@ test "example" {
 }
 
 test "smaller example" {
-    const result = try solve(
+    const result = try solve(std.testing.allocator,
         \\########
         \\#..O.O.#
         \\##@.O..#
@@ -238,7 +234,7 @@ test "smaller example" {
 }
 
 test "p2" {
-    const result = try solve(
+    const result = try solve(std.testing.allocator,
         \\#######
         \\#...#.#
         \\#.....#

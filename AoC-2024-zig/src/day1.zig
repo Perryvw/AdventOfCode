@@ -10,7 +10,7 @@ pub const solution = aoc.Solution{ .WithData = .{
     .solve = &solve,
 } };
 
-fn solve(data: []const u8) !aoc.Answers {
+fn solve(_: std.mem.Allocator, data: []const u8) !aoc.Answers {
     var leftList: [INPUT_BUFFER]i32 = undefined;
     var rightList: [INPUT_BUFFER]i32 = undefined;
 
@@ -60,7 +60,7 @@ fn solve(data: []const u8) !aoc.Answers {
 }
 
 test "example input" {
-    const r = try solve(
+    const r = try solve(std.testing.allocator,
         \\3   4
         \\4   3
         \\2   5

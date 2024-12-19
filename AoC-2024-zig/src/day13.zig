@@ -7,7 +7,7 @@ pub const solution = aoc.Solution{ .WithData = .{
     .solve = &solve,
 } };
 
-fn solve(data: []const u8) !aoc.Answers {
+fn solve(_: std.mem.Allocator, data: []const u8) !aoc.Answers {
     var p1: u64 = 0;
     var p2: u64 = 0;
 
@@ -74,7 +74,7 @@ fn parsePrize(line: []const u8) std.meta.Tuple(&.{ i64, i64 }) {
 }
 
 test "example" {
-    const result = try solve(
+    const result = try solve(std.testing.allocator,
         \\Button A: X+94, Y+34
         \\Button B: X+22, Y+67
         \\Prize: X=8400, Y=5400
