@@ -62,9 +62,9 @@ const answers = [_]Solution{
     @import("day17.zig").solution,
     @import("day18.zig").solution,
     @import("day19.zig").solution,
+    @import("day20.zig").solution,
     @import("day21.zig").solution,
     @import("day22.zig").solution,
-    @import("day20.zig").solution,
     @import("day23.zig").solution,
 };
 

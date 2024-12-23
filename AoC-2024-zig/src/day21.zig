@@ -5,104 +5,34 @@ const common = @import("common.zig");
 pub const solution = aoc.Solution{ .WithData = .{
     .data = "data/day21.txt",
     .solve = &solve,
-    .benchmarkIterations = 10,
+    .benchmarkIterations = 100,
 } };
 
 const MemoMap = [27]std.StringHashMap(u64);
 
 fn solve(allocator: std.mem.Allocator, data: []const u8) !aoc.Answers {
+    var tableP1 = std.AutoHashMap(Key, u64).init(allocator);
+    defer tableP1.deinit();
+
+    var tableP2 = std.AutoHashMap(Key, u64).init(allocator);
+    defer tableP2.deinit();
+
+    try fillDynamicProgrammingTable(allocator, 3, &tableP1);
+    try fillDynamicProgrammingTable(allocator, 26, &tableP2);
+
     var p1: u64 = 0;
     var p2: u64 = 0;
-
-    var arena = std.heap.ArenaAllocator.init(allocator);
-    defer arena.deinit();
-
-    var cache: MemoMap = undefined;
-    for (0..cache.len) |i| {
-        cache[i] = std.StringHashMap(u64).init(allocator);
-    }
-    defer {
-        for (0..cache.len) |i| {
-            cache[i].deinit();
-        }
-    }
-
-    var lines = std.mem.tokenizeScalar(u8, data, '\n');
-    while (lines.next()) |line| {
-        p1 += try complexity(arena.allocator(), line, 2, &cache);
-        p2 += try complexity(arena.allocator(), line, 25, &cache);
+    var iter = std.mem.tokenizeScalar(u8, data, '\n');
+    while (iter.next()) |code| {
+        const numericPart = common.parseInt(u32, code[0 .. code.len - 1]);
+        p1 += numericPart * fewestPresses(3, &tableP1, code);
+        p2 += numericPart * fewestPresses(26, &tableP2, code);
     }
 
     return .{
         .p1 = .{ .i = p1 },
         .p2 = .{ .i = p2 },
     };
-}
-
-fn complexity(allocator: std.mem.Allocator, code: []const u8, depth: u8, cache: *MemoMap) !u64 {
-    const numericPart = common.parseInt(u32, code[0 .. code.len - 1]);
-    const cost = try costForSequence(allocator, code, depth + 1, keyPosLarge, cache);
-    return numericPart * cost;
-}
-
-fn sequencesForDiff(allocator: std.mem.Allocator, from: common.Coord, to: common.Coord, head: std.ArrayList(u8), illegalY: i32) !std.ArrayList(std.ArrayList(u8)) {
-    var result = std.ArrayList(std.ArrayList(u8)).init(allocator);
-    if (from.x == to.x and from.y == to.y) {
-        var h = try head.clone();
-        try h.append('A');
-        try result.append(h);
-        return result;
-    }
-
-    if (from.x > to.x and (from.x != 1 or from.y != illegalY)) {
-        var next = try head.clone();
-        try next.append('<');
-        try result.appendSlice((try sequencesForDiff(allocator, .{ .x = from.x - 1, .y = from.y }, to, next, illegalY)).items);
-    } else if (from.x < to.x) {
-        var next = try head.clone();
-        try next.append('>');
-        try result.appendSlice((try sequencesForDiff(allocator, .{ .x = from.x + 1, .y = from.y }, to, next, illegalY)).items);
-    }
-    if (from.y > to.y) {
-        var next = try head.clone();
-        try next.append('^');
-        try result.appendSlice((try sequencesForDiff(allocator, .{ .x = from.x, .y = from.y - 1 }, to, next, illegalY)).items);
-    } else if (from.y < to.y and (from.x != 0 or from.y != illegalY - 1)) {
-        var next = try head.clone();
-        try next.append('v');
-        try result.appendSlice((try sequencesForDiff(allocator, .{ .x = from.x, .y = from.y + 1 }, to, next, illegalY)).items);
-    }
-
-    return result;
-}
-
-fn costForSequence(allocator: std.mem.Allocator, seq: []const u8, depth: u8, keyPos: *const fn (u8) common.Coord, cache: *MemoMap) !u64 {
-    if (cache[depth].get(seq)) |c| {
-        return c;
-    }
-
-    if (depth == 0) {
-        return seq.len;
-    }
-
-    var pos: u8 = 'A';
-    var totalCost: u64 = 0;
-    for (seq) |c| {
-        const seqs = try sequencesForDiff(allocator, keyPos(pos), keyPos(c), std.ArrayList(u8).init(allocator), keyPos('A').y);
-
-        var minCost: usize = std.math.maxInt(usize);
-        for (seqs.items) |child_seq| {
-            const cost = try costForSequence(allocator, child_seq.items, depth - 1, keyPosSmall, cache);
-            if (cost < minCost) {
-                minCost = cost;
-            }
-        }
-        totalCost += minCost;
-
-        pos = c;
-    }
-    try cache[depth].put(seq, totalCost);
-    return totalCost;
 }
 
 fn keyPosLarge(k: u8) common.Coord {
@@ -116,6 +46,7 @@ fn keyPosLarge(k: u8) common.Coord {
         '1' => .{ .x = 0, .y = 2 },
         '2' => .{ .x = 1, .y = 2 },
         '3' => .{ .x = 2, .y = 2 },
+        ' ' => .{ .x = 0, .y = 3 },
         '0' => .{ .x = 1, .y = 3 },
         'A' => .{ .x = 2, .y = 3 },
         else => @panic("unknown key!"),
@@ -124,6 +55,7 @@ fn keyPosLarge(k: u8) common.Coord {
 
 fn keyPosSmall(k: u8) common.Coord {
     return switch (k) {
+        ' ' => .{ .x = 0, .y = 0 },
         '^' => .{ .x = 1, .y = 0 },
         'A' => .{ .x = 2, .y = 0 },
         '<' => .{ .x = 0, .y = 1 },
@@ -131,6 +63,99 @@ fn keyPosSmall(k: u8) common.Coord {
         '>' => .{ .x = 2, .y = 1 },
         else => @panic("unknown key!"),
     };
+}
+
+const Key = struct {
+    level: usize,
+    from: u8,
+    to: u8,
+};
+
+fn fewestPresses(level: usize, table: *std.AutoHashMap(Key, u64), seq: []const u8) u64 {
+    var current: u8 = 'A';
+    var result: u64 = 0;
+    for (seq) |next| {
+        result += table.get(.{ .from = current, .to = next, .level = level }).?;
+        current = next;
+    }
+    return result;
+}
+
+const LEFTS = "<<<<<<<<<<<<<<<<";
+const RIGHTS = ">>>>>>>>>>>>>>>>";
+const UPS = "^^^^^^^^^^^^^^^^";
+const DOWNS = "vvvvvvvvvvvv";
+
+fn fillDynamicProgrammingTable(allocator: std.mem.Allocator, levels: usize, table: *std.AutoHashMap(Key, u64)) !void {
+    for ("^A<v>") |c1| {
+        for ("^A<v>") |c2| {
+            try table.put(.{ .from = c1, .to = c2, .level = 0 }, 1);
+        }
+    }
+
+    for (1..levels + 1) |layer| {
+        if (layer == levels) {
+            for (" 0123456789A") |c1| {
+                for (" 0123456789A") |c2| {
+                    const p1 = keyPosLarge(c1);
+                    const p2 = keyPosLarge(c2);
+                    const diff = p1.diff(p2);
+
+                    var seqHor = try allocator.alloc(u8, @abs(diff.x) + @abs(diff.y) + 1);
+                    defer allocator.free(seqHor);
+                    var seqVert = try allocator.alloc(u8, @abs(diff.x) + @abs(diff.y) + 1);
+                    defer allocator.free(seqVert);
+
+                    std.mem.copyForwards(u8, seqHor, if (diff.x < 0) RIGHTS[0..@abs(diff.x)] else LEFTS[0..@intCast(diff.x)]);
+                    std.mem.copyForwards(u8, seqHor[@abs(diff.x)..], if (diff.y < 0) DOWNS[0..@abs(diff.y)] else UPS[0..@intCast(diff.y)]);
+                    seqHor[seqHor.len - 1] = 'A';
+
+                    std.mem.copyForwards(u8, seqVert, if (diff.y < 0) DOWNS[0..@abs(diff.y)] else UPS[0..@intCast(diff.y)]);
+                    std.mem.copyForwards(u8, seqVert[@abs(diff.y)..], if (diff.x < 0) RIGHTS[0..@abs(diff.x)] else LEFTS[0..@intCast(diff.x)]);
+                    seqVert[seqVert.len - 1] = 'A';
+
+                    var fewestHorizontal = fewestPresses(layer - 1, table, seqHor);
+                    var fewestVertical = fewestPresses(layer - 1, table, seqVert);
+
+                    const illegal = keyPosLarge(' ');
+                    if (p1.x == illegal.x and p2.y == illegal.y) fewestVertical = std.math.maxInt(u64);
+                    if (p2.x == illegal.x and p1.y == illegal.y) fewestHorizontal = std.math.maxInt(u64);
+
+                    try table.put(.{ .from = c1, .to = c2, .level = layer }, @min(fewestHorizontal, fewestVertical));
+                }
+            }
+        } else {
+            for (" ^A<v>") |c1| {
+                for (" ^A<v>") |c2| {
+                    const p1 = keyPosSmall(c1);
+                    const p2 = keyPosSmall(c2);
+                    const diff = p1.diff(p2);
+
+                    var seqHor = try allocator.alloc(u8, @abs(diff.x) + @abs(diff.y) + 1);
+                    defer allocator.free(seqHor);
+                    var seqVert = try allocator.alloc(u8, @abs(diff.x) + @abs(diff.y) + 1);
+                    defer allocator.free(seqVert);
+
+                    std.mem.copyForwards(u8, seqHor, if (diff.x < 0) RIGHTS[0..@abs(diff.x)] else LEFTS[0..@intCast(diff.x)]);
+                    std.mem.copyForwards(u8, seqHor[@abs(diff.x)..], if (diff.y < 0) DOWNS[0..@abs(diff.y)] else UPS[0..@intCast(diff.y)]);
+                    seqHor[seqHor.len - 1] = 'A';
+
+                    std.mem.copyForwards(u8, seqVert, if (diff.y < 0) DOWNS[0..@abs(diff.y)] else UPS[0..@intCast(diff.y)]);
+                    std.mem.copyForwards(u8, seqVert[@abs(diff.y)..], if (diff.x < 0) RIGHTS[0..@abs(diff.x)] else LEFTS[0..@intCast(diff.x)]);
+                    seqVert[seqVert.len - 1] = 'A';
+
+                    var fewestHorizontal = fewestPresses(layer - 1, table, seqHor);
+                    var fewestVertical = fewestPresses(layer - 1, table, seqVert);
+
+                    const illegal = keyPosSmall(' ');
+                    if (p1.x == illegal.x and p2.y == illegal.y) fewestVertical = std.math.maxInt(u64);
+                    if (p2.x == illegal.x and p1.y == illegal.y) fewestHorizontal = std.math.maxInt(u64);
+
+                    try table.put(.{ .from = c1, .to = c2, .level = layer }, @min(fewestHorizontal, fewestVertical));
+                }
+            }
+        }
+    }
 }
 
 test "example" {
