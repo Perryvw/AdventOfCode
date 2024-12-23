@@ -20,7 +20,7 @@ fn solve(allocator: std.mem.Allocator, data: []const u8) !aoc.Answers {
         for (0..grid.width) |x| {
             if (grid.isCharAtPosition(@intCast(x), @intCast(y), '0')) {
                 // Trailhead
-                const r = try numHikes(&grid, @intCast(x), @intCast(y), &seen);
+                const r = try numHikes(&grid, .{ .x = @intCast(x), .y = @intCast(y) }, &seen);
                 p1 += r.unique;
                 p2 += r.all;
                 seen.clearRetainingCapacity();
@@ -36,9 +36,9 @@ fn solve(allocator: std.mem.Allocator, data: []const u8) !aoc.Answers {
 
 const HikesResult = struct { unique: u32, all: u32 };
 
-fn numHikes(grid: *const common.ImmutableGrid, x: i32, y: i32, seen: *std.AutoHashMap(u64, bool)) !HikesResult {
-    if (grid.isCharAtPosition(x, y, '9')) {
-        const h = hash(x, y);
+fn numHikes(grid: *const common.ImmutableGrid, pos: common.Coord, seen: *std.AutoHashMap(u64, bool)) !HikesResult {
+    if (grid.isCharAtPosition(pos.x, pos.y, '9')) {
+        const h = hash(pos);
         var unique: u32 = 0;
         if (!seen.contains(h)) {
             try seen.put(h, true);
@@ -49,33 +49,21 @@ fn numHikes(grid: *const common.ImmutableGrid, x: i32, y: i32, seen: *std.AutoHa
 
     var result: HikesResult = .{ .all = 0, .unique = 0 };
 
-    const nextChar = grid.charAtPos(x, y).? + 1;
-    if (grid.isCharAtPosition(x + 1, y, nextChar)) {
-        const r = try numHikes(grid, x + 1, y, seen);
-        result.all += r.all;
-        result.unique += r.unique;
-    }
-    if (grid.isCharAtPosition(x - 1, y, nextChar)) {
-        const r = try numHikes(grid, x - 1, y, seen);
-        result.all += r.all;
-        result.unique += r.unique;
-    }
-    if (grid.isCharAtPosition(x, y + 1, nextChar)) {
-        const r = try numHikes(grid, x, y + 1, seen);
-        result.all += r.all;
-        result.unique += r.unique;
-    }
-    if (grid.isCharAtPosition(x, y - 1, nextChar)) {
-        const r = try numHikes(grid, x, y - 1, seen);
-        result.all += r.all;
-        result.unique += r.unique;
+    const nextChar = grid.charAtPos(pos.x, pos.y).? + 1;
+    for (common.allDirections) |direction| {
+        const p = pos.add(direction.vector());
+        if (grid.isCharAtPosition(p.x, p.y, nextChar)) {
+            const r = try numHikes(grid, p, seen);
+            result.all += r.all;
+            result.unique += r.unique;
+        }
     }
 
     return result;
 }
 
-fn hash(x: i32, y: i32) u64 {
-    return @as(u64, @intCast(x)) * 1000 + @as(u64, @intCast(y));
+fn hash(pos: common.Coord) u64 {
+    return @as(u64, @intCast(pos.x)) * 1000 + @as(u64, @intCast(pos.y));
 }
 
 test "example" {

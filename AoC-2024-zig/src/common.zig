@@ -138,6 +138,9 @@ pub const Direction = enum {
         };
     }
 };
+
+pub const allDirections = [_]Direction{ .Up, .Right, .Down, .Left };
+
 pub const Coord = struct {
     x: i32,
     y: i32,
@@ -145,6 +148,12 @@ pub const Coord = struct {
         return .{
             .x = self.x + other.x,
             .y = self.y + other.y,
+        };
+    }
+    pub fn diff(self: Coord, other: Coord) Coord {
+        return .{
+            .x = self.x - other.x,
+            .y = self.y - other.y,
         };
     }
 };
@@ -169,6 +178,14 @@ pub fn Grid(t: type) type {
         pub fn isCharAtPosition(self: Self, x: i32, y: i32, c: u8) bool {
             if (!self.isInsideGrid(x, y)) return false;
             return self.data[self.pos(x, y)] == c;
+        }
+        pub fn isCharAtPositionAny(self: Self, x: i32, y: i32, options: []const u8) bool {
+            for (options) |opt| {
+                if (self.isCharAtPosition(x, y, opt)) {
+                    return true;
+                }
+            }
+            return false;
         }
 
         pub fn charAtPos(self: Self, x: i32, y: i32) ?u8 {
