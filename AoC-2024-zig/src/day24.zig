@@ -5,7 +5,6 @@ const common = @import("common.zig");
 pub const solution = aoc.Solution{ .WithData = .{
     .data = "data/day24.txt",
     .solve = &solve,
-    .benchmarkIterations = 1000,
 } };
 
 const Gate = union(enum) {
