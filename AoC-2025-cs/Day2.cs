@@ -1,6 +1,4 @@
-﻿using System.Data;
-
-namespace AoC_2025_cs;
+﻿namespace AoC_2025_cs;
 
 public class Day2
 {
