@@ -27,7 +27,7 @@ public class Day2
                 }
                 if (IsSillyP2(id))
                 {
-                    Console.WriteLine(id);
+                    //Console.WriteLine(id);
                     p2 += id;
                 }
             }
