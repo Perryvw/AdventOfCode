@@ -14,7 +14,7 @@ class Grid
         _data = [.. data];
         Width = data.IndexOf('\n');
         // Account for newlines
-        Height = data.Length / Width;
+        Height = (data.Length + 1) / (Width + 1);
     }
 
     public char At(int x, int y) => _data[Index(x, y)];
