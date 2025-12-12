@@ -54,8 +54,6 @@ public class Day11
             return result;
         }
 
-        p1 = PathsToYou("out");
-
         Dictionary<string, long> memo2 = [];
 
         long PathsToSvrViaDacAndFft(string node)
@@ -65,7 +63,7 @@ public class Day11
 
             if (node == "dac")
             {
-                var result = inverseAdjacencyList.TryGetValue(node, out var inputs) ? inputs.Select(PathsToNodeViaFft).Sum() : 0;
+                var result = inverseAdjacencyList.TryGetValue(node, out var inputs) ? inputs.Select(PathsToSvrViaFft).Sum() : 0;
                 memo2.Add(node, result);
                 return result;
             }
@@ -106,7 +104,7 @@ public class Day11
 
         Dictionary<string, long> memo4 = [];
 
-        long PathsToNodeViaFft(string node)
+        long PathsToSvrViaFft(string node)
         {
             if (node == "svr") return 0;
             if (memo4.TryGetValue(node, out var v)) return v;
@@ -119,7 +117,7 @@ public class Day11
             }
             else
             {
-                var result = inverseAdjacencyList.TryGetValue(node, out var inputs) ? inputs.Select(PathsToNodeViaFft).Sum() : 0;
+                var result = inverseAdjacencyList.TryGetValue(node, out var inputs) ? inputs.Select(PathsToSvrViaFft).Sum() : 0;
                 memo4.Add(node, result);
                 return result;
             }
@@ -138,7 +136,6 @@ public class Day11
         }
 
         p1 = PathsToYou("out");
-
         p2 = PathsToSvrViaDacAndFft("out");
 
         Console.WriteLine($"p1: {p1}");
